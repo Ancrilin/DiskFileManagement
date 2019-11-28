@@ -28,15 +28,13 @@ public class Test {
 		String f1_data = management.readFile(f1, data.length());//读取文件指定长度的内容
 		System.out.println(f1_data);
 		management.changeFileProperty(f1, 2);//修改文件为系统文件
-		System.out.println("delete file:"+management.deleteFile(f1));//文件删除失败
-		management.changeFileProperty(f1, 3);//修改文件为只读文件
-		System.out.println("1opentable:"+OpenedTable.getInstance().getOpenedSize());
-		System.out.println("delete file:"+management.deleteFile(f1));//文件删除失败，该文件没有关闭
-		System.out.println("1parent file size:"+f1.getParent().getFile_list().size());
-		management.closeFile(f1);//关闭文件
-		System.out.println("2opentable:"+OpenedTable.getInstance().getOpenedSize());
-		System.out.println("delete file:"+management.deleteFile(f1));
-		System.out.println("2parent file size:"+f1.getParent().getFile_list().size());
+		System.out.println("0 opentable:"+OpenedTable.getInstance().getOpenedSize());
+		System.out.println("1 delete file:"+management.deleteFile(f1));//文件删除失败
+		management.changeFileProperty(f1, 3);//修改文件为普通文件
+		System.out.println(f1.isOrdinaryFile());
+		System.out.println("1 opentable:"+OpenedTable.getInstance().getOpenedSize());
+		System.out.println("exist openedtable "+ OpenedTable.getInstance().isExist(f1));
+		System.out.println("2 delete file:"+management.deleteFile(f1));
 	}
 
 }

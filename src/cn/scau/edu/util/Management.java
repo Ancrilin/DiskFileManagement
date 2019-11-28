@@ -170,14 +170,12 @@ public class Management {
 	//删除文件,文件必须先关闭
 	public boolean deleteFile(File file) {
 		boolean flag = false;
-		if(this.openedTable.isExist(file)) {//必须先关闭文件
+		if(!this.openedTable.isExist(file)) {//必须先关闭文件,已打开表中不存在
 			if(file.isSystemFile()) {//系统文件不能删除
 				return flag;
 			}
 			flag = this.now_disk.getFat().deleteFile(file);
-			System.out.println("1flag"+flag);
 		}
-		System.out.println("2flag"+flag);
 		return flag;
 	}
 	
