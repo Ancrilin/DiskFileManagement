@@ -35,6 +35,10 @@ public class Test {
 		System.out.println("1 opentable:"+OpenedTable.getInstance().getOpenedSize());
 		System.out.println("exist openedtable "+ OpenedTable.getInstance().isExist(f1));
 		System.out.println("2 delete file:"+management.deleteFile(f1));
+		System.out.println("2 opentable:"+OpenedTable.getInstance().getOpenedSize());
+		System.out.println("close "+management.closeFile(f1));
+		System.out.println("3 delete file:"+management.deleteFile(f1));
+		System.out.println("3 opentable:"+OpenedTable.getInstance().getOpenedSize());
 	}
 
 }

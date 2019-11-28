@@ -198,7 +198,7 @@ public class FAT {
 	//删除文件,文件必须先关闭
 	public boolean deleteFile(File file) {
 		boolean flag = false;
-		if(OpenedTable.getInstance().isExist(file)) {//删除的文件必须没有打开
+		if(!OpenedTable.getInstance().isExist(file)) {//删除的文件必须没有打开,已打开表中不存在
 			int block_num = file.getBlocks_num();
 			int index = file.getBlock_start();//从文件开始盘块删除
 			int now = index;

@@ -175,6 +175,7 @@ public class Management {
 				return flag;
 			}
 			flag = this.now_disk.getFat().deleteFile(file);
+			System.out.println("delete "+flag);
 		}
 		return flag;
 	}
