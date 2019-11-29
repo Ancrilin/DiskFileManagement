@@ -216,22 +216,29 @@ public class FAT {
 	
 	//读文件,要读的文件必须先打开,从读指针开始读
 	public byte[] readFile(File file, int length, OFFile offile) {
-		byte[] data = new byte[length];//创建要读取的长度字节数组
+		byte[] t_data = new byte[length];//创建要读取的长度字节数组
 		int block_read = offile.getRead().getBlock_num();//读指针盘块
 		int byte_read = offile.getRead().getByte_num();//读指针字节位置
+		int real_length = 0;//真实读取长度
 		for(int i=0;i<length;i++) {
 			if(!MainMemory.getInstance().isBlockExist(this.blocks[block_read], block_read, this.disk)) {//盘块要先读入内存
-				MainMemory.getInstance().addToMemory(this.blocks[i], i, this.disk);
+				MainMemory.getInstance().addToMemory(this.blocks[block_read], block_read, this.disk);
 			}
-			data[i] = this.getBlocks()[block_read].getBlockData()[byte_read];
+			if(this.getBlocks()[block_read].getBlockData()[byte_read]=='#') {//长度不够真实长度,'#'为文件结束,不读取#,指针不移动
+				break;
+			}
+			t_data[i] = this.getBlocks()[block_read].getBlockData()[byte_read];
+			real_length++;
 			byte_read++;
 			if(byte_read>=64) {//当前盘块已读完
 				byte_read=0;
 				block_read=this.allocation[block_read];//读下一盘块
 			}
-			if(data[i]=='#') {//长度不够真实长度,'#'为文件结束
-				break;
-			}
+			
+		}
+		byte[] data = new byte[real_length];
+		for(int i=0;i<real_length;i++) {//返回真实读取数据
+			data[i] = t_data[i];
 		}
 		//file.setRead(block_read, byte_read);//修改读指针,文件读指针不用修改
 		offile.setRead(block_read, byte_read);//设置已打开文件表读指针
@@ -246,7 +253,10 @@ public class FAT {
 		int n_length = 0;//实际写入文件长度
 		for(int i=0;i<length;i++) {
 			this.blocks[block_write].getBlockData()[byte_write] = data[i];
-			n_length++;
+			if(data[i] == '#') {//结束符,不用指向下一字节,下次直接覆盖#
+				break;
+			}
+			n_length++;//档次写入长度没有包含#
 			byte_write++;//指针后移
 			if(byte_write>=64) {//要指向下一盘块
 				int free = this.searchFreeBlocks(-1);//申请新的空闲块
@@ -255,13 +265,10 @@ public class FAT {
 				byte_write = 0;//读指针字节指向块头
 				file.setBlocks_num(file.getBlocks_num()+1);//文件盘块数+1
 			}
-			if(data[i] == '#') {//结束符
-				break;
-			}
 		}
 		file.setWrite(block_write, byte_write);//修改文件写指针
 		offile.setWrite(block_write, byte_write);//设置已打开文件表写指针
-		file.setByte_num(file.getByte_num()+n_length);//文件大小增加
+		file.setByte_num(file.getByte_num()+n_length);//文件大小增加,不包含#
 	}
 	
 	//关闭文件,删除已打开文件表

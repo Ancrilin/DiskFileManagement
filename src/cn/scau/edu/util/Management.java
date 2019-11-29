@@ -175,7 +175,6 @@ public class Management {
 				return flag;
 			}
 			flag = this.now_disk.getFat().deleteFile(file);
-			System.out.println("delete "+flag);
 		}
 		return flag;
 	}
@@ -191,6 +190,7 @@ public class Management {
 	public String readFile(File file, int length) {
 		byte[] data = null;
 		if(!openedTable.isExist(file)) {//文件没打开，则打开文件
+			System.out.println("into");
 			boolean open = openedTable.add(file, 0);//读打开文件
 			if(open==false) {//打开失败
 				return null;

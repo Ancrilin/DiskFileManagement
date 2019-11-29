@@ -48,7 +48,6 @@ public class OpenedTable {
 				break;
 			}
 		}
-		System.out.println(offile.getDisk_path());
 		return offile;
 	}
 	

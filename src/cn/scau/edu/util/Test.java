@@ -21,24 +21,20 @@ public class Test {
 		System.out.println(pwd.getDiskPath());//当前目录修改为d1
 		File f1 = management.makeFile("f1");//在当前目录新建文件,新建的文件大小为0,不含任何内容
 		System.out.println(f1.getDisk_path());
-		String data = "write to f1";//要写入文件f1的内容,写入的内容在文件尾后面追加
+		String data = "write to f1 write to f1 write to f1 write to f1 write to f1 write to f1 write to f1 write to f1 write to f1 write to f1 write to f1 write to f1 write to f1 write to f1 write to f1 write to f1 write to f1 write to f1 write to f1 write to f1 write to f1 write to f1 write to f1 write to f1 write to f1 write to f1 write to f1 end#";//要写入文件f1的内容,写入的内容在文件尾后面追加
 		boolean result1 = management.writeFile(f1, data);//写入缓冲区成功返回true，只读文件不可写
 		System.out.println(result1);
+		System.out.println(management.writeFile(f1, "new input#"));
 		management.updateBuffer();//刷新缓冲区，写入文件时，只有缓冲区满才会写入磁盘块，这里手动刷新缓冲区
-		String f1_data = management.readFile(f1, data.length());//读取文件指定长度的内容
-		System.out.println(f1_data);
-		management.changeFileProperty(f1, 2);//修改文件为系统文件
-		System.out.println("0 opentable:"+OpenedTable.getInstance().getOpenedSize());
-		System.out.println("1 delete file:"+management.deleteFile(f1));//文件删除失败
-		management.changeFileProperty(f1, 3);//修改文件为普通文件
-		System.out.println(f1.isOrdinaryFile());
-		System.out.println("1 opentable:"+OpenedTable.getInstance().getOpenedSize());
-		System.out.println("exist openedtable "+ OpenedTable.getInstance().isExist(f1));
-		System.out.println("2 delete file:"+management.deleteFile(f1));
-		System.out.println("2 opentable:"+OpenedTable.getInstance().getOpenedSize());
-		System.out.println("close "+management.closeFile(f1));
-		System.out.println("3 delete file:"+management.deleteFile(f1));
-		System.out.println("3 opentable:"+OpenedTable.getInstance().getOpenedSize());
+		String f1_data1 = management.readFile(f1, 100);//读取文件指定长度的内容
+		System.out.println(f1_data1);
+		String f1_data2 = management.readFile(f1, 5000);
+		System.out.println(f1_data2);
+//		System.out.println(management.getNow_disk().getFat().getAllocation()[10]);
+		System.out.println(management.closeFile(f1));
+		System.out.println(management.deleteFile(f1));
+		System.out.println(f1.getBlock_start());
+//		System.out.println(management.readFile(f1, 500));
 	}
 
 }
