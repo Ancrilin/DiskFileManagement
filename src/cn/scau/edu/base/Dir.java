@@ -37,26 +37,20 @@ public class Dir extends Super{
 	}
 	
 	//当前目录递归搜索
-	public Super search(String name) {
-		Super result = null;
+	public List<Super> search(String name) {
+		List<Super> search_result = new ArrayList<Super>();//多搜索，返回列表
+		for(Dir dir:this.dir_list) {
+			if(dir.getName().equals(name)) {//符合目录或文件名,加入到列表
+				search_result.add(dir);
+			}
+			search_result.addAll(dir.search(name));
+		}
 		for(File file:this.file_list) {
 			if(file.getName().equals(name)) {
-				result = file;
-				break;
+				search_result.add(file);
 			}
 		}
-		if(result!=null) {
-			return result;
-		}
-		for(Dir dir:this.dir_list) {
-			if(dir.getName().equals(name)) {
-				result = dir;
-				break;
-			}else {
-				result = dir.search(name);
-			}
-		}
-		return result;
+		return search_result;
 	}
 	
 	//从当前目录搜索绝对路径符合的目录，跳转指令实现

@@ -81,14 +81,14 @@ public class Management {
 	}
 	
 	//当前目录搜索文件或目录,null则文件或目录不存在
-	public Super search(String name) {
-		Super result = this.pwd.search(name);
+	public List<Super> search(String name) {
+		List<Super> result = this.pwd.search(name);
 		return result;
 	}
 	
 	//从当前磁盘根目录开始
-	public Super searchFromRoot(String name) {
-		Super result = this.now_disk.getRoot().search(name);
+	public List<Super> searchFromRoot(String name) {
+		List<Super> result = this.now_disk.getRoot().search(name);
 		return result;
 	}
 	

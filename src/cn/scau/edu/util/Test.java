@@ -1,9 +1,12 @@
 package cn.scau.edu.util;
 
+import java.util.List;
+
 import cn.scau.edu.base.Dir;
 import cn.scau.edu.base.Disk;
 import cn.scau.edu.base.FAT;
 import cn.scau.edu.base.File;
+import cn.scau.edu.base.Super;
 
 public class Test {
 
@@ -41,8 +44,9 @@ public class Test {
 		management.updateBuffer();
 		System.out.println(management.readFile(f3, 50));
 		System.out.println(management.readFile(f3, 200));
-		File search_f1 = (File)management.searchFromRoot("f2");
-		System.out.println(search_f1.getDisk_path());
+		List<Super> search_f1 = management.searchFromRoot("d2");
+		Dir s_f1 = (Dir)search_f1.get(0);
+		System.out.println(s_f1.getDiskPath());
 	}
 
 }
