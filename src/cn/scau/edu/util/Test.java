@@ -24,17 +24,25 @@ public class Test {
 		String data = "write to f1 write to f1 write to f1 write to f1 write to f1 write to f1 write to f1 write to f1 write to f1 write to f1 write to f1 write to f1 write to f1 write to f1 write to f1 write to f1 write to f1 write to f1 write to f1 write to f1 write to f1 write to f1 write to f1 write to f1 write to f1 write to f1 write to f1 end#";//要写入文件f1的内容,写入的内容在文件尾后面追加
 		boolean result1 = management.writeFile(f1, data);//写入缓冲区成功返回true，只读文件不可写
 		System.out.println(result1);
-		System.out.println(management.writeFile(f1, "new input#"));
-		management.updateBuffer();//刷新缓冲区，写入文件时，只有缓冲区满才会写入磁盘块，这里手动刷新缓冲区
-		String f1_data1 = management.readFile(f1, 100);//读取文件指定长度的内容
-		System.out.println(f1_data1);
-		String f1_data2 = management.readFile(f1, 5000);
-		System.out.println(f1_data2);
-//		System.out.println(management.getNow_disk().getFat().getAllocation()[10]);
-		System.out.println(management.closeFile(f1));
-		System.out.println(management.deleteFile(f1));
-		System.out.println(f1.getBlock_start());
-//		System.out.println(management.readFile(f1, 500));
+		management.updateBuffer();
+		System.out.println(management.readFile(f1, 5000));
+		File f2 = management.makeFile("f2");
+		System.out.println("pwd size: "+pwd.getFile_list().size());
+		System.out.println(management.writeFile(f2, "2"+data));
+		management.updateBuffer();
+		System.out.println(management.readFile(f2, 5000));
+		Dir d2 = management.makeDir("d2");
+		System.out.println(d2.getDiskPath());
+		pwd = management.selectDir(d2);
+		System.out.println(management.getPwd().getDiskPath());
+		File f3 = management.makeFile("f3");
+		System.out.println(f3.getDisk_path());
+		System.out.println(management.writeFile(f3, "3"+data));
+		management.updateBuffer();
+		System.out.println(management.readFile(f3, 50));
+		System.out.println(management.readFile(f3, 200));
+		File search_f1 = (File)management.searchFromRoot("f2");
+		System.out.println(search_f1.getDisk_path());
 	}
 
 }

@@ -213,7 +213,7 @@ public class Management {
 		return new String(data);
 	}
 	
-	//写文件
+	//写文件,每次写要以#结束
 	public boolean writeFile(File file, String data) {
 		boolean flag = false;
 		if(file.isOnlyReadFile()) {//该文件为只读文件

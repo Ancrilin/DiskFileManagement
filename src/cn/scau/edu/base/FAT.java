@@ -214,7 +214,7 @@ public class FAT {
 		return flag;
 	}
 	
-	//读文件,要读的文件必须先打开,从读指针开始读
+	//读文件,要读的文件必须先打开,从读指针开始读,不会把#读出来
 	public byte[] readFile(File file, int length, OFFile offile) {
 		byte[] t_data = new byte[length];//创建要读取的长度字节数组
 		int block_read = offile.getRead().getBlock_num();//读指针盘块
@@ -245,7 +245,7 @@ public class FAT {
 		return data;
 	}
 	
-	//写文件,要写的长度,要写的文件必须先打开
+	//写文件,要写的长度,要写的文件必须先打开,边写边申请新空间
 	public void writeFile(File file, int length, Buffer buf, OFFile offile) {
 		byte[] data = buf.getBuf_byte();//从缓冲区得到要写的字节数组
 		int block_write = offile.getWrite().getBlock_num();//写块指针
