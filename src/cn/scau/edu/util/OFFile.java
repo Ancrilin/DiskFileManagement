@@ -2,7 +2,6 @@ package cn.scau.edu.util;
 
 public class OFFile {
 	private String disk_path;
-	private String path;
 	private byte[] property;
 	private int block_start;
 	private int flag;//0以读方式打开，1以写方式打开
@@ -61,14 +60,6 @@ public class OFFile {
 	public void setWrite(int block_num, int byte_num) {
 		this.write.setBlock_num(block_num);
 		this.write.setByte_num(byte_num);
-	}
-
-	public String getPath() {
-		return path;
-	}
-
-	public void setPath(String path) {
-		this.path = path;
 	}
 	
 }

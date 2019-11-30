@@ -27,11 +27,11 @@ public class OpenedTable {
 		if(!this.isExist(file) && this.table.size()<=this.num) {
 			OFFile new_one = new OFFile();
 			new_one.setDisk_path(file.getDisk_path());
-			new_one.setPath(file.getPath());
+//			new_one.setPath(file.getPath());
 			new_one.setFlag(flag);
 			new_one.setProperty(file.getProperty());
 			new_one.setBlock_start(file.getBlock_start());
-			new_one.setRead(file.getBlock_start(), 0);
+			new_one.setRead(file.getRead().getBlock_num(), file.getRead().getByte_num());
 			new_one.setWrite(file.getWrite().getBlock_num(), file.getWrite().getByte_num());
 			this.table.add(new_one);
 			result = true;
@@ -48,7 +48,6 @@ public class OpenedTable {
 				break;
 			}
 		}
-		System.out.println(offile.getDisk_path());
 		return offile;
 	}
 	
@@ -86,6 +85,19 @@ public class OpenedTable {
 			}
 		}
 		return flag;
+	}
+	
+	//设置文件打开类型,0为读，1为写,false为该已打开文件
+	public boolean setFlag(File file, int flag) {
+		boolean result = false;
+		for(int i=0;i<this.table.size();i++) {
+			if(this.table.get(i).getDisk_path().equals(file.getDisk_path())) {
+				this.table.get(i).setFlag(flag);
+				result = true;
+				break;
+			}
+		}
+		return result;
 	}
 	
 	//获得当前已打开文件数量

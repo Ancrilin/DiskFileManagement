@@ -30,8 +30,8 @@ public class FAT {
 	//设置文件分配表根目录
 	public Dir setRoot() {
 		if(root == null) {
-			Dir root = this.newDir("root", null);
-			root.setDir();//设置为目录
+			Dir root = this.newDir(this.getDisk_id(), null);
+			//root.setDir();//设置为目录
 			root.setSystemFile();//为系统目录文件，不能删除
 			this.root = root;
 		}
@@ -79,7 +79,7 @@ public class FAT {
 	}
 	
 	//释放盘块,删除目录和文件时必须释放盘块
-	public boolean releaseBlock(int index) {
+	private boolean releaseBlock(int index) {
 		boolean flag = false;
 		this.setFree(index);
 		return true;
@@ -95,7 +95,7 @@ public class FAT {
 	
 	
 	//申请空闲磁盘块，并设置指向下一块磁盘块，文件结束则为-1
-	public int searchFreeBlocks(int state) {
+	private int searchFreeBlocks(int state) {
 		int free = -1;
 		if(this.freeSpace!=0) {//磁盘仍有空闲空间
 			for(int i=this.start;i<blocks_num;i++) {
@@ -115,7 +115,7 @@ public class FAT {
 	public Dir newDir(String name, Dir parent) {
 		Dir n_dir = null;
 		boolean duplicate = false;//判断有无重复名
-		if(!name.equals("root"))
+		if(!name.equals(this.disk.getDisk_id()))
 		{
 			for(File file:parent.getFile_list()) {
 				if(file.getName().equals(name)) {
@@ -139,10 +139,10 @@ public class FAT {
 			if(free!=-1)
 			{
 				n_dir = new Dir(name, parent, this.disk);
-				n_dir.setDir();//目录
+				//n_dir.setDir();//目录
 				n_dir.setOrdinaryFile();//普通目录文件
 				n_dir.setBlock_start(free);
-				if(!name.equals("root") && n_dir!=null)//非根目录的父目录才能添加目录
+				if(!name.equals(this.disk.getDisk_id()) && n_dir!=null)//非根目录的父目录才能添加目录
 				{
 					parent.addDir(n_dir);
 				}
@@ -198,8 +198,7 @@ public class FAT {
 	//删除文件,文件必须先关闭
 	public boolean deleteFile(File file) {
 		boolean flag = false;
-		if(OpenedTable.getInstance().isExist(file)) {//删除的文件必须没有打开
-			int block_num = file.getBlocks_num();
+		if(!OpenedTable.getInstance().isExist(file)) {//删除的文件必须没有打开,已打开表中不存在
 			int index = file.getBlock_start();//从文件开始盘块删除
 			int now = index;
 			int next = this.allocation[now];//指向下一盘块
@@ -214,31 +213,38 @@ public class FAT {
 		return flag;
 	}
 	
-	//读文件,要读的文件必须先打开,从读指针开始读
+	//读文件,要读的文件必须先打开,从读指针开始读,不会把#读出来
 	public byte[] readFile(File file, int length, OFFile offile) {
-		byte[] data = new byte[length];//创建要读取的长度字节数组
+		byte[] t_data = new byte[length];//创建要读取的长度字节数组
 		int block_read = offile.getRead().getBlock_num();//读指针盘块
 		int byte_read = offile.getRead().getByte_num();//读指针字节位置
+		int real_length = 0;//真实读取长度
 		for(int i=0;i<length;i++) {
 			if(!MainMemory.getInstance().isBlockExist(this.blocks[block_read], block_read, this.disk)) {//盘块要先读入内存
-				MainMemory.getInstance().addToMemory(this.blocks[i], i, this.disk);
+				MainMemory.getInstance().addToMemory(this.blocks[block_read], block_read, this.disk);
 			}
-			data[i] = this.getBlocks()[block_read].getBlockData()[byte_read];
+			if(this.getBlocks()[block_read].getBlockData()[byte_read]=='#') {//长度不够真实长度,'#'为文件结束,不读取#,指针不移动
+				break;
+			}
+			t_data[i] = this.getBlocks()[block_read].getBlockData()[byte_read];
+			real_length++;
 			byte_read++;
 			if(byte_read>=64) {//当前盘块已读完
 				byte_read=0;
 				block_read=this.allocation[block_read];//读下一盘块
 			}
-			if(data[i]=='#') {//长度不够真实长度,'#'为文件结束
-				break;
-			}
+			
+		}
+		byte[] data = new byte[real_length];
+		for(int i=0;i<real_length;i++) {//返回真实读取数据
+			data[i] = t_data[i];
 		}
 		//file.setRead(block_read, byte_read);//修改读指针,文件读指针不用修改
 		offile.setRead(block_read, byte_read);//设置已打开文件表读指针
 		return data;
 	}
 	
-	//写文件,要写的长度,要写的文件必须先打开
+	//写文件,要写的长度,要写的文件必须先打开,边写边申请新空间
 	public void writeFile(File file, int length, Buffer buf, OFFile offile) {
 		byte[] data = buf.getBuf_byte();//从缓冲区得到要写的字节数组
 		int block_write = offile.getWrite().getBlock_num();//写块指针
@@ -246,7 +252,10 @@ public class FAT {
 		int n_length = 0;//实际写入文件长度
 		for(int i=0;i<length;i++) {
 			this.blocks[block_write].getBlockData()[byte_write] = data[i];
-			n_length++;
+			if(data[i] == '#') {//结束符,不用指向下一字节,下次直接覆盖#
+				break;
+			}
+			n_length++;//档次写入长度没有包含#
 			byte_write++;//指针后移
 			if(byte_write>=64) {//要指向下一盘块
 				int free = this.searchFreeBlocks(-1);//申请新的空闲块
@@ -255,13 +264,10 @@ public class FAT {
 				byte_write = 0;//读指针字节指向块头
 				file.setBlocks_num(file.getBlocks_num()+1);//文件盘块数+1
 			}
-			if(data[i] == '#') {//结束符
-				break;
-			}
 		}
 		file.setWrite(block_write, byte_write);//修改文件写指针
 		offile.setWrite(block_write, byte_write);//设置已打开文件表写指针
-		file.setByte_num(file.getByte_num()+n_length);//文件大小增加
+		file.setByte_num(file.getByte_num()+n_length);//文件大小增加,不包含#
 	}
 	
 	//关闭文件,删除已打开文件表
@@ -276,19 +282,19 @@ public class FAT {
 	public byte[] typeFile(File file) {
 		byte[] data = new byte[file.getByte_num()];
 		int block_read = file.getBlock_start();//读指针盘块
-		int byte_read = 0;//读指针字节位置
+		int byte_read = 8;//读指针字节位置
 		for(int i=0;i<file.getByte_num();i++) {
 			if(!MainMemory.getInstance().isBlockExist(this.blocks[block_read], block_read, this.disk)) {//盘块要先读入内存
-				MainMemory.getInstance().addToMemory(this.blocks[i], i, this.disk);
+				MainMemory.getInstance().addToMemory(this.blocks[block_read], block_read, this.disk);
+			}
+			if(this.getBlocks()[block_read].getBlockData()[byte_read]=='#') {//长度不够真实长度,'#'为文件结束,不读取#,指针不移动
+				break;
 			}
 			data[i] = this.blocks[block_read].getBlockData()[byte_read];
 			byte_read++;
 			if(byte_read>=64) {//当前盘块已读完
 				byte_read=0;
 				block_read=this.allocation[block_read];//读下一盘块
-			}
-			if(data[i]=='#') {//长度不够真实长度,'#'为文件结束
-				break;
 			}
 		}
 		return data;
@@ -304,10 +310,6 @@ public class FAT {
 
 	public int[] getAllocation() {
 		return allocation;
-	}
-
-	public int getFAT_allocation() {
-		return FAT_allocation;
 	}
 
 	public Block[] getBlocks() {

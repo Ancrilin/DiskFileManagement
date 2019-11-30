@@ -17,6 +17,7 @@ public class Management {
 	private Disk now_disk;
 	private String path;//当前绝对路径
 	private Dir now_root;
+	private String disk_path;
 	private Buffer buffer1 = new Buffer();//双缓冲
 	private Buffer buffer2 = new Buffer();
 	
@@ -33,7 +34,8 @@ public class Management {
 		this.disk_list.add(now_disk);//添加至磁盘列表
 		this.now_root = this.now_disk.getRoot();
 		this.pwd = this.now_root;
-		this.path = this.now_root.getPath();
+		this.disk_path = this.now_root.getDiskPath();
+//		this.path = this.now_root.getPath();
 		this.openedTable = OpenedTable.getInstance();
 	}
 	
@@ -47,7 +49,7 @@ public class Management {
 				this.now_disk = this.disk_list.get(i);
 				this.now_root = this.now_disk.getRoot();
 				this.pwd = this.now_root;
-				this.path = this.now_root.getPath();
+//				this.path = this.now_root.getPath();
 				flag = true;
 				break;
 			}
@@ -72,6 +74,11 @@ public class Management {
 		return new_disk;
 	}
 	
+	//获得当前磁盘空闲盘块数
+	public int getNowDiskFreeSpace() {
+		return this.now_disk.getFat().getFreeSpace();
+	}
+	
 	//目录调用api
 	
 	//新建目录，null为创建失败，可能有重复目录或文件名
@@ -80,15 +87,22 @@ public class Management {
 		return dir;
 	}
 	
-	//当前目录搜索文件或目录,null则文件或目录不存在
-	public Super search(String name) {
-		Super result = this.pwd.search(name);
+	//当前目录搜索文件或目录,返回搜索的列表,列表大小为空为该名字不存在
+	//每次取得结果元素时,需要先判断是文件还是目录(调用isDir()方法),然后使用强制转换
+	public List<Super> search(String name) {
+		List<Super> result = this.pwd.search(name);
 		return result;
 	}
 	
 	//从当前磁盘根目录开始
-	public Super searchFromRoot(String name) {
-		Super result = this.now_disk.getRoot().search(name);
+	public List<Super> searchFromRoot(String name) {
+		List<Super> result = this.now_disk.getRoot().search(name);
+		return result;
+	}
+	
+	//只搜索当前目录下的子目录和子文件,只返回一个，因为一个目录内不能有相同名
+	public Super searchNow(String name) {
+		Super result = this.pwd.searchNow(name);
 		return result;
 	}
 	
@@ -119,7 +133,7 @@ public class Management {
 			if(this.pwd.getDir_list().get(i).getName().equals(dir.getName())){
 				selected = this.pwd.getDir_list().get(i);
 				this.pwd = selected;
-				this.path = this.pwd.getPath();
+//				this.path = this.pwd.getPath();
 				break;
 			}
 		}
@@ -129,10 +143,10 @@ public class Management {
 	//选择父目录,鼠标点击父目录返回上一目录时调用,当前目录为根目录时,返回null
 	public Dir selectParent() {
 		Dir parent = null;
-		if(!pwd.getName().equals("root")) {
+		if(!pwd.getName().equals(this.getNow_disk().getDisk_id())) {
 			parent = pwd.getParent();
 			this.pwd = parent;
-			this.path = this.pwd.getPath();
+//			this.path = this.pwd
 		}
 		return parent;
 	}
@@ -170,14 +184,12 @@ public class Management {
 	//删除文件,文件必须先关闭
 	public boolean deleteFile(File file) {
 		boolean flag = false;
-		if(this.openedTable.isExist(file)) {//必须先关闭文件
+		if(!this.openedTable.isExist(file)) {//必须先关闭文件,已打开表中不存在
 			if(file.isSystemFile()) {//系统文件不能删除
 				return flag;
 			}
 			flag = this.now_disk.getFat().deleteFile(file);
-			System.out.println("1flag"+flag);
 		}
-		System.out.println("2flag"+flag);
 		return flag;
 	}
 	
@@ -214,7 +226,7 @@ public class Management {
 		return new String(data);
 	}
 	
-	//写文件
+	//写文件,每次写要以#结束
 	public boolean writeFile(File file, String data) {
 		boolean flag = false;
 		if(file.isOnlyReadFile()) {//该文件为只读文件
@@ -225,6 +237,9 @@ public class Management {
 			if(open==false) {//打开失败
 				return false;
 			}
+		}
+		if(OpenedTable.getInstance().getFlag(file)==0) {//该文件以只读方式打开
+			OpenedTable.getInstance().setFlag(file, 1);//设置为写方式打开
 		}
 		Buffer buf = null;
 		if(buffer1.isUsed()&&buffer2.isUsed()) {
@@ -247,12 +262,13 @@ public class Management {
 		return flag;
 	}
 	
-	public boolean linkBuffer(File file, Buffer buf) {
+	private boolean linkBuffer(File file, Buffer buf) {
 		boolean flag = false;
 		if(buf.isUsed())
 			buf.writeImmediately();
 		buf.reset();
 		buf.set(file);
+		flag = true;
 		return flag;
 	}
 	
@@ -268,7 +284,7 @@ public class Management {
 		return this.getNow_disk().getFat().closeFile(file);
 	}
 	
-	//更改文件属性,0为只读，1为可写，2为改为系统文件，3为改为普通文件
+	//更改文件属性,0为只读，1为可写(取消只读)，2为改为系统文件，3为改为普通文件
 	public boolean changeFileProperty(File file, int state) {
 		boolean flag = false;
 		if(state==0) {
@@ -283,6 +299,7 @@ public class Management {
 		if(state==3) {//改为普通文件则取消为系统文件
 			file.setOrdinaryFile();
 		}
+		flag = true;
 		return flag;
 	}
 	
@@ -310,11 +327,6 @@ public class Management {
 		return now_disk;
 	}
 
-	//当前磁盘绝对路径
-	public String getPath() {
-		return path;
-	}
-
 	//当前磁盘根目录
 	public Dir getNow_root() {
 		return now_root;
@@ -322,22 +334,7 @@ public class Management {
 	
 	//返回从磁盘开始的绝对路径
 	public String getDisk_path() {
-		return this.now_disk.getDisk_id() + this.path;
+		return this.disk_path;
 	}
 
-	public static Management getManagement() {
-		return management;
-	}
-
-	public OpenedTable getOpenedTable() {
-		return openedTable;
-	}
-
-	public Buffer getBuffer1() {
-		return buffer1;
-	}
-
-	public Buffer getBuffer2() {
-		return buffer2;
-	}
 }
