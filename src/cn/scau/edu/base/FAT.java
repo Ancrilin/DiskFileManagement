@@ -288,14 +288,14 @@ public class FAT {
 			if(!MainMemory.getInstance().isBlockExist(this.blocks[block_read], block_read, this.disk)) {//盘块要先读入内存
 				MainMemory.getInstance().addToMemory(this.blocks[block_read], block_read, this.disk);
 			}
+			if(this.getBlocks()[block_read].getBlockData()[byte_read]=='#') {//长度不够真实长度,'#'为文件结束,不读取#,指针不移动
+				break;
+			}
 			data[i] = this.blocks[block_read].getBlockData()[byte_read];
 			byte_read++;
 			if(byte_read>=64) {//当前盘块已读完
 				byte_read=0;
 				block_read=this.allocation[block_read];//读下一盘块
-			}
-			if(data[i]=='#') {//长度不够真实长度,'#'为文件结束
-				break;
 			}
 		}
 		return data;
