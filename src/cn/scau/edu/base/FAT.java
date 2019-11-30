@@ -286,7 +286,7 @@ public class FAT {
 		int byte_read = 8;//读指针字节位置
 		for(int i=0;i<file.getByte_num();i++) {
 			if(!MainMemory.getInstance().isBlockExist(this.blocks[block_read], block_read, this.disk)) {//盘块要先读入内存
-				MainMemory.getInstance().addToMemory(this.blocks[i], i, this.disk);
+				MainMemory.getInstance().addToMemory(this.blocks[block_read], block_read, this.disk);
 			}
 			data[i] = this.blocks[block_read].getBlockData()[byte_read];
 			byte_read++;
