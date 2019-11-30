@@ -27,7 +27,7 @@ public class OpenedTable {
 		if(!this.isExist(file) && this.table.size()<=this.num) {
 			OFFile new_one = new OFFile();
 			new_one.setDisk_path(file.getDisk_path());
-			new_one.setPath(file.getPath());
+//			new_one.setPath(file.getPath());
 			new_one.setFlag(flag);
 			new_one.setProperty(file.getProperty());
 			new_one.setBlock_start(file.getBlock_start());

@@ -17,6 +17,7 @@ public class Management {
 	private Disk now_disk;
 	private String path;//当前绝对路径
 	private Dir now_root;
+	private String disk_path;
 	private Buffer buffer1 = new Buffer();//双缓冲
 	private Buffer buffer2 = new Buffer();
 	
@@ -33,7 +34,8 @@ public class Management {
 		this.disk_list.add(now_disk);//添加至磁盘列表
 		this.now_root = this.now_disk.getRoot();
 		this.pwd = this.now_root;
-		this.path = this.now_root.getPath();
+		this.disk_path = this.now_root.getDiskPath();
+//		this.path = this.now_root.getPath();
 		this.openedTable = OpenedTable.getInstance();
 	}
 	
@@ -47,7 +49,7 @@ public class Management {
 				this.now_disk = this.disk_list.get(i);
 				this.now_root = this.now_disk.getRoot();
 				this.pwd = this.now_root;
-				this.path = this.now_root.getPath();
+//				this.path = this.now_root.getPath();
 				flag = true;
 				break;
 			}
@@ -131,7 +133,7 @@ public class Management {
 			if(this.pwd.getDir_list().get(i).getName().equals(dir.getName())){
 				selected = this.pwd.getDir_list().get(i);
 				this.pwd = selected;
-				this.path = this.pwd.getPath();
+//				this.path = this.pwd.getPath();
 				break;
 			}
 		}
@@ -144,7 +146,7 @@ public class Management {
 		if(!pwd.getName().equals(this.getNow_disk().getDisk_id())) {
 			parent = pwd.getParent();
 			this.pwd = parent;
-			this.path = this.pwd.getPath();
+//			this.path = this.pwd
 		}
 		return parent;
 	}
@@ -325,11 +327,6 @@ public class Management {
 		return now_disk;
 	}
 
-	//当前磁盘绝对路径
-	public String getPath() {
-		return path;
-	}
-
 	//当前磁盘根目录
 	public Dir getNow_root() {
 		return now_root;
@@ -337,7 +334,7 @@ public class Management {
 	
 	//返回从磁盘开始的绝对路径
 	public String getDisk_path() {
-		return this.now_disk.getDisk_id() + this.path;
+		return this.disk_path;
 	}
 
 }

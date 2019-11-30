@@ -19,7 +19,7 @@ public class File implements Super{
 		this.name = name;
 		this.parent = parent;
 		this.disk = disk;
-		this.disk_path = this.parent.getPath() + "/" + this.name;
+		this.disk_path = this.parent.getDiskPath() + "/" + this.name;
 		this.path = this.disk_path;
 	}
 	
@@ -69,10 +69,6 @@ public class File implements Super{
 
 	public Dir getParent() {
 		return parent;
-	}
-
-	public String getPath() {
-		return path;
 	}
 
 	public String getDisk_path() {

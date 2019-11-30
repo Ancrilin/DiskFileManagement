@@ -31,7 +31,6 @@ public class FAT {
 	public Dir setRoot() {
 		if(root == null) {
 			Dir root = this.newDir(this.getDisk_id(), null);
-			System.out.println(this.getDisk_id());
 			//root.setDir();//设置为目录
 			root.setSystemFile();//为系统目录文件，不能删除
 			this.root = root;
@@ -220,7 +219,6 @@ public class FAT {
 		int block_read = offile.getRead().getBlock_num();//读指针盘块
 		int byte_read = offile.getRead().getByte_num();//读指针字节位置
 		int real_length = 0;//真实读取长度
-		System.out.println("read: "+block_read);
 		for(int i=0;i<length;i++) {
 			if(!MainMemory.getInstance().isBlockExist(this.blocks[block_read], block_read, this.disk)) {//盘块要先读入内存
 				MainMemory.getInstance().addToMemory(this.blocks[block_read], block_read, this.disk);

@@ -16,26 +16,21 @@ public class Test {
 		// TODO Auto-generated method stub
 		Management management = Management.getInstance();//创建管理器,已存在根目录,C盘
 		Dir root = management.getNow_root();//当前根目录
-		System.out.println(root.getDiskPath());//Disk_path为包含磁盘的绝对路径
-		System.out.println(root.getPath());//path为不包含磁盘的绝对路径
-		Dir pwd = management.getPwd();//获得当前目录
-		Dir d1 = management.makeDir("d1");//新建目录，在当前目录下新建
-		System.out.println(d1.getDiskPath());
-		management.selectDir(d1);//在当前目录下跳转子目录,即在当前目录中选择子目录进入
-		pwd = management.getPwd();
-		System.out.println(pwd.getDiskPath());//当前目录修改为d1
-		File f1 = management.makeFile("f1");//在当前目录新建文件,新建的文件大小为0,不含任何内容
-		System.out.println(f1.getDisk_path());
-		String data = "write to f1 write to f1 write to f1 write to f1 write to f1 write to f1 write to f1 write to f1 write to f1 write to f1 write to f1 write to f1 write to f1 write to f1 write to f1 write to f1 write to f1 write to f1 write to f1 write to f1 write to f1 write to f1 write to f1 write to f1 write to f1 write to f1 write to f1 end#";//要写入文件f1的内容,写入的内容在文件尾后面追加
-		boolean result1 = management.writeFile(f1, data);//写入缓冲区成功返回true，只读文件不可写
-		System.out.println(result1);
+		System.out.println("pwd: "+management.getPwd().getDiskPath());
+		System.out.println("root: "+management.getNow_root().getDiskPath());
+		Dir d1 = management.makeDir("d1");
+		File f1 = management.makeFile("f1");
+		System.out.println("d1: "+d1.getDiskPath());
+		System.out.println("f1: "+f1.getDisk_path());
+		Dir pwd = management.selectDir(d1);
+		System.out.println("pwd: "+management.getPwd().getDiskPath());
+		File f2 = management.makeFile("f2");
+		String data = "write to f2 write to f2 write to f2 write to f2 write to f2 write to f2 write to f2 write to f2#";
+		management.writeFile(f2, data);
 		management.updateBuffer();
-		String result = management.readFile(f1, 50);
-		System.out.println(result);
-		System.out.println(management.readFile(f1, 5000));
-		System.out.println(management.typeFile(f1));
-		File f = (File)management.search("f1").get(0);
-		System.out.println(f.getDisk_path());
+		System.out.println(management.readFile(f2, 50));
+		System.out.println(management.readFile(f2, 300));
+		
 	}
 
 }

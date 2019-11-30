@@ -17,7 +17,6 @@ public class Dir implements Super{
 		this.name = name;
 		this.parent = parent;
 		this.disk = disk;
-		System.out.println(this.getDisk().getDisk_id());
 		if(name.equals(this.getDisk().getDisk_id())) {
 			this.disk = disk;
 		}else {
@@ -33,7 +32,7 @@ public class Dir implements Super{
 			this.path = this.disk_path;
 		}else {
 			this.disk_path = this.parent.getDiskPath() + "/" +this.name;
-			this.path = this.parent.getPath() + "/" + this.name;
+//			this.path = this.parent.getPath() + "/" + this.name;
 		}
 		byte[] property = new byte[8];//设置目录属性
 		property[4] = 1;//设置为目录
@@ -156,13 +155,9 @@ public class Dir implements Super{
 		this.block_start = block_start;
 	}
 
-	public String getPath() {
-		return path;
-	}
-
-	public void setPath(String path) {
-		this.path = path;
-	}
+//	public void setPath(String path) {
+//		this.path = path;
+//	}
 	
 	public String getDiskPath() {
 		return this.disk_path;
