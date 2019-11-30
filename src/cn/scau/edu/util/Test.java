@@ -2,6 +2,8 @@ package cn.scau.edu.util;
 
 import java.util.List;
 
+import com.sun.org.glassfish.external.statistics.impl.StatsImpl;
+
 import cn.scau.edu.base.Dir;
 import cn.scau.edu.base.Disk;
 import cn.scau.edu.base.FAT;
@@ -32,6 +34,8 @@ public class Test {
 		System.out.println(result);
 		System.out.println(management.readFile(f1, 5000));
 		System.out.println(management.typeFile(f1));
+		File f = (File)management.search("f1").get(0);
+		System.out.println(f.getDisk_path());
 	}
 
 }

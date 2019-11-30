@@ -261,6 +261,7 @@ public class Management {
 			buf.writeImmediately();
 		buf.reset();
 		buf.set(file);
+		flag = true;
 		return flag;
 	}
 	
