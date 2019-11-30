@@ -31,6 +31,7 @@ public class Test {
 		String result = management.readFile(f1, 50);
 		System.out.println(result);
 		System.out.println(management.readFile(f1, 5000));
+		System.out.println(management.typeFile(f1));
 	}
 
 }
