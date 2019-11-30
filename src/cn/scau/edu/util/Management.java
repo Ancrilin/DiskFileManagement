@@ -80,7 +80,8 @@ public class Management {
 		return dir;
 	}
 	
-	//当前目录搜索文件或目录,null则文件或目录不存在
+	//当前目录搜索文件或目录,返回搜索的列表,列表大小为空为该名字不存在
+	//每次取得结果元素时,需要先判断是文件还是目录(调用isDir()方法),然后使用强制转换
 	public List<Super> search(String name) {
 		List<Super> result = this.pwd.search(name);
 		return result;
@@ -246,7 +247,7 @@ public class Management {
 		return flag;
 	}
 	
-	public boolean linkBuffer(File file, Buffer buf) {
+	private boolean linkBuffer(File file, Buffer buf) {
 		boolean flag = false;
 		if(buf.isUsed())
 			buf.writeImmediately();
@@ -324,19 +325,4 @@ public class Management {
 		return this.now_disk.getDisk_id() + this.path;
 	}
 
-	public static Management getManagement() {
-		return management;
-	}
-
-	public OpenedTable getOpenedTable() {
-		return openedTable;
-	}
-
-	public Buffer getBuffer1() {
-		return buffer1;
-	}
-
-	public Buffer getBuffer2() {
-		return buffer2;
-	}
 }

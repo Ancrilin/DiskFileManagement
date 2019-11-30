@@ -79,7 +79,7 @@ public class FAT {
 	}
 	
 	//释放盘块,删除目录和文件时必须释放盘块
-	public boolean releaseBlock(int index) {
+	private boolean releaseBlock(int index) {
 		boolean flag = false;
 		this.setFree(index);
 		return true;
@@ -95,7 +95,7 @@ public class FAT {
 	
 	
 	//申请空闲磁盘块，并设置指向下一块磁盘块，文件结束则为-1
-	public int searchFreeBlocks(int state) {
+	private int searchFreeBlocks(int state) {
 		int free = -1;
 		if(this.freeSpace!=0) {//磁盘仍有空闲空间
 			for(int i=this.start;i<blocks_num;i++) {
@@ -199,7 +199,6 @@ public class FAT {
 	public boolean deleteFile(File file) {
 		boolean flag = false;
 		if(!OpenedTable.getInstance().isExist(file)) {//删除的文件必须没有打开,已打开表中不存在
-			int block_num = file.getBlocks_num();
 			int index = file.getBlock_start();//从文件开始盘块删除
 			int now = index;
 			int next = this.allocation[now];//指向下一盘块
@@ -311,10 +310,6 @@ public class FAT {
 
 	public int[] getAllocation() {
 		return allocation;
-	}
-
-	public int getFAT_allocation() {
-		return FAT_allocation;
 	}
 
 	public Block[] getBlocks() {
