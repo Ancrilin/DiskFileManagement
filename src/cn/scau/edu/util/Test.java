@@ -28,25 +28,9 @@ public class Test {
 		boolean result1 = management.writeFile(f1, data);//写入缓冲区成功返回true，只读文件不可写
 		System.out.println(result1);
 		management.updateBuffer();
+		String result = management.readFile(f1, 50);
+		System.out.println(result);
 		System.out.println(management.readFile(f1, 5000));
-		File f2 = management.makeFile("f2");
-		System.out.println("pwd size: "+pwd.getFile_list().size());
-		System.out.println(management.writeFile(f2, "2"+data));
-		management.updateBuffer();
-		System.out.println(management.readFile(f2, 5000));
-		Dir d2 = management.makeDir("d2");
-		System.out.println(d2.getDiskPath());
-		pwd = management.selectDir(d2);
-		System.out.println(management.getPwd().getDiskPath());
-		File f3 = management.makeFile("f3");
-		System.out.println(f3.getDisk_path());
-		System.out.println(management.writeFile(f3, "3"+data));
-		management.updateBuffer();
-		System.out.println(management.readFile(f3, 50));
-		System.out.println(management.readFile(f3, 200));
-		List<Super> search_f1 = management.searchFromRoot("d2");
-		Dir s_f1 = (Dir)search_f1.get(0);
-		System.out.println(s_f1.getDiskPath());
 	}
 
 }

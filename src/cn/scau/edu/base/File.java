@@ -2,7 +2,7 @@ package cn.scau.edu.base;
 
 import cn.scau.edu.util.Pointer;
 
-public class File extends Super{
+public class File implements Super{
 	private String name;//文件名
 	private Dir parent;//父目录
 	private String content="";//文件内容
@@ -61,9 +61,9 @@ public class File extends Super{
 		this.read = new Pointer();
 		this.write = new Pointer();
 		this.read.setBlock_num(this.block_start);
-		this.read.setByte_num(0);
+		this.read.setByte_num(8);//跳过属性
 		this.write.setBlock_num(this.block_start);
-		this.write.setByte_num(0);
+		this.write.setByte_num(8);//跳过属性
 		this.byte_num = 0;
 	}
 
@@ -77,16 +77,6 @@ public class File extends Super{
 
 	public String getDisk_path() {
 		return disk_path;
-	}
-	
-	//普通文件
-	public boolean isOrdinaryFile() {
-		return super.isOrdinaryFile();
-	}
-	
-	//设置普通文件属性,则系统文件属性位置为0
-	public void setOrdinaryFile() {
-		super.setOrdinaryFile();
 	}
 
 	public Pointer getRead() {
@@ -119,6 +109,80 @@ public class File extends Super{
 		return disk;
 	}
 	
+	public byte[] getProperty() {
+		byte[] property = new byte[8];
+		for(int i=0;i<8;i++) {
+			property[i] = this.getDisk().getFat().getBlocks()[this.block_start].getBlockData()[i];
+		}
+		return property;
+	}
 	
+	private boolean setProperty(byte[] property) {
+		for(int i=0;i<8;i++) {
+			this.getDisk().getFat().getBlocks()[this.block_start].getBlockData()[i] = property[i];
+		}
+		return true;
+	}
+	
+	//目录
+	@Override
+	public boolean isDir() {
+		boolean flag = false;
+		if(this.getDisk().getFat().getBlocks()[this.block_start].getBlockData()[4]==1) {
+			flag = true;
+		}
+		return flag;
+	}
+		
+	//设置系统文件
+	@Override
+	public boolean setSystemFile() {
+		boolean flag = false;
+		this.getDisk().getFat().getBlocks()[this.block_start].getBlockData()[6]=1;
+		this.getDisk().getFat().getBlocks()[this.block_start].getBlockData()[5]=0;
+		return true;
+	}
+		
+	@Override
+	public boolean isSystemFile() {
+		boolean flag = false;
+		if(this.getDisk().getFat().getBlocks()[this.block_start].getBlockData()[6]==1) {
+			flag = true;
+		}
+		return flag;
+	}
+		
+	@Override
+	public boolean isOnlyReadFile() {
+		boolean flag = false;
+		if(this.getDisk().getFat().getBlocks()[this.block_start].getBlockData()[7]==1) {
+			flag = true;
+		}
+		return flag;
+	}
+		
+	@Override
+	public boolean setOnlyReadFile(int state) {//1设为只读,0取消只读
+		boolean flag = false;
+		this.getDisk().getFat().getBlocks()[this.block_start].getBlockData()[7]=(byte)state;
+		return true;
+	}
+		
+	@Override
+	public boolean isOrdinaryFile() {
+		boolean flag = false;
+		if(this.getDisk().getFat().getBlocks()[this.block_start].getBlockData()[5]==1) {
+			flag = true;
+		}
+		return flag;
+	}
+		
+	@Override
+	public boolean setOrdinaryFile() {
+		boolean flag = false;
+		this.getDisk().getFat().getBlocks()[this.block_start].getBlockData()[6]=0;
+		this.getDisk().getFat().getBlocks()[this.block_start].getBlockData()[5]=1;
+		return true;
+	}
 	
 }

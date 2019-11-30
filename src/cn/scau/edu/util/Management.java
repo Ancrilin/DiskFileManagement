@@ -93,6 +93,12 @@ public class Management {
 		return result;
 	}
 	
+	//只搜索当前目录下的子目录和子文件,只返回一个，因为一个目录内不能有相同名
+	public Super searchNow(String name) {
+		Super result = this.pwd.searchNow(name);
+		return result;
+	}
+	
 	//删除目录，只能删除空目录,false可能该目录不为空目录,或该目录为系统目录
 	public boolean removeDir(Dir dir) {
 		if(dir.isOrdinaryFile()) {//普通文件或目录才可以删除
@@ -191,7 +197,6 @@ public class Management {
 	public String readFile(File file, int length) {
 		byte[] data = null;
 		if(!openedTable.isExist(file)) {//文件没打开，则打开文件
-			System.out.println("into");
 			boolean open = openedTable.add(file, 0);//读打开文件
 			if(open==false) {//打开失败
 				return null;
@@ -225,6 +230,9 @@ public class Management {
 			if(open==false) {//打开失败
 				return false;
 			}
+		}
+		if(OpenedTable.getInstance().getFlag(file)==0) {//该文件以只读方式打开
+			OpenedTable.getInstance().setFlag(file, 1);//设置为写方式打开
 		}
 		Buffer buf = null;
 		if(buffer1.isUsed()&&buffer2.isUsed()) {
@@ -268,7 +276,7 @@ public class Management {
 		return this.getNow_disk().getFat().closeFile(file);
 	}
 	
-	//更改文件属性,0为只读，1为可写，2为改为系统文件，3为改为普通文件
+	//更改文件属性,0为只读，1为可写(取消只读)，2为改为系统文件，3为改为普通文件
 	public boolean changeFileProperty(File file, int state) {
 		boolean flag = false;
 		if(state==0) {
@@ -283,6 +291,7 @@ public class Management {
 		if(state==3) {//改为普通文件则取消为系统文件
 			file.setOrdinaryFile();
 		}
+		flag = true;
 		return flag;
 	}
 	
