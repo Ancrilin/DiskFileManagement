@@ -72,6 +72,11 @@ public class Management {
 		return new_disk;
 	}
 	
+	//获得当前磁盘空闲盘块数
+	public int getNowDiskFreeSpace() {
+		return this.now_disk.getFat().getFreeSpace();
+	}
+	
 	//目录调用api
 	
 	//新建目录，null为创建失败，可能有重复目录或文件名
@@ -136,7 +141,7 @@ public class Management {
 	//选择父目录,鼠标点击父目录返回上一目录时调用,当前目录为根目录时,返回null
 	public Dir selectParent() {
 		Dir parent = null;
-		if(!pwd.getName().equals("root")) {
+		if(!pwd.getName().equals(this.getNow_disk().getDisk_id())) {
 			parent = pwd.getParent();
 			this.pwd = parent;
 			this.path = this.pwd.getPath();

@@ -30,7 +30,8 @@ public class FAT {
 	//设置文件分配表根目录
 	public Dir setRoot() {
 		if(root == null) {
-			Dir root = this.newDir(this.disk_id, null);
+			Dir root = this.newDir(this.getDisk_id(), null);
+			System.out.println(this.getDisk_id());
 			//root.setDir();//设置为目录
 			root.setSystemFile();//为系统目录文件，不能删除
 			this.root = root;
@@ -115,7 +116,7 @@ public class FAT {
 	public Dir newDir(String name, Dir parent) {
 		Dir n_dir = null;
 		boolean duplicate = false;//判断有无重复名
-		if(!name.equals("root"))
+		if(!name.equals(this.disk.getDisk_id()))
 		{
 			for(File file:parent.getFile_list()) {
 				if(file.getName().equals(name)) {
@@ -142,7 +143,7 @@ public class FAT {
 				//n_dir.setDir();//目录
 				n_dir.setOrdinaryFile();//普通目录文件
 				n_dir.setBlock_start(free);
-				if(!name.equals("root") && n_dir!=null)//非根目录的父目录才能添加目录
+				if(!name.equals(this.disk.getDisk_id()) && n_dir!=null)//非根目录的父目录才能添加目录
 				{
 					parent.addDir(n_dir);
 				}

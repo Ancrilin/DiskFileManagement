@@ -19,8 +19,8 @@ public class File implements Super{
 		this.name = name;
 		this.parent = parent;
 		this.disk = disk;
-		this.path = this.parent.getPath() + "/" + this.name;
-		this.disk_path = this.disk.getDisk_id() + ":/" + this.path;
+		this.disk_path = this.parent.getPath() + "/" + this.name;
+		this.path = this.disk_path;
 	}
 	
 	public void updateBlocks_num() {//刷新文件盘块数

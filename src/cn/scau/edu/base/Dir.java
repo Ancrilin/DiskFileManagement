@@ -16,7 +16,9 @@ public class Dir implements Super{
 	public Dir(String name, Dir parent, Disk disk) {//目录名，父目录，磁盘
 		this.name = name;
 		this.parent = parent;
-		if(name.equals("root")) {
+		this.disk = disk;
+		System.out.println(this.getDisk().getDisk_id());
+		if(name.equals(this.getDisk().getDisk_id())) {
 			this.disk = disk;
 		}else {
 			this.disk = parent.getDisk();
@@ -26,14 +28,16 @@ public class Dir implements Super{
 	
 	private void init() {
 		this.disk_path = this.disk.getDisk_id() + ":/";
-		if(this.name.equals("root")) {
-			this.path = "root";
+		if(this.name.equals(this.getDisk().getDisk_id())) {
+			this.disk_path = this.disk.getDisk_id() + ":";
+			this.path = this.disk_path;
 		}else {
+			this.disk_path = this.parent.getDiskPath() + "/" +this.name;
 			this.path = this.parent.getPath() + "/" + this.name;
 		}
 		byte[] property = new byte[8];//设置目录属性
 		property[4] = 1;//设置为目录
-		if(this.name.equals("root")) {//系统文件，不能删除
+		if(this.name.equals(this.getDisk().getDisk_id())) {//系统文件，不能删除
 			property[6]=1;
 		}
 		this.setProperty(property);
@@ -161,7 +165,7 @@ public class Dir implements Super{
 	}
 	
 	public String getDiskPath() {
-		return this.disk_path + this.path;
+		return this.disk_path;
 	}
 	
 	private byte[] getProperty() {
