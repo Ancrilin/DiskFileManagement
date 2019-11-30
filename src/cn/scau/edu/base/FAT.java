@@ -30,7 +30,7 @@ public class FAT {
 	//设置文件分配表根目录
 	public Dir setRoot() {
 		if(root == null) {
-			Dir root = this.newDir("root", null);
+			Dir root = this.newDir(this.disk_id, null);
 			//root.setDir();//设置为目录
 			root.setSystemFile();//为系统目录文件，不能删除
 			this.root = root;
