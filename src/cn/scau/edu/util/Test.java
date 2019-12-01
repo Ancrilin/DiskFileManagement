@@ -18,7 +18,7 @@ public class Test {
 		Dir root = management.getNow_root();//当前根目录
 		System.out.println("pwd: "+management.getPwd().getDiskPath());
 		System.out.println("root: "+management.getNow_root().getDiskPath());
-		Dir d1 = management.makeDir("d1");
+		Dir d1 = Management.getInstance().makeDir("d1");
 		File f1 = management.makeFile("f1");
 		System.out.println("d1: "+d1.getDiskPath());
 		System.out.println("f1: "+f1.getDisk_path());
