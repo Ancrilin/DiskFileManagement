@@ -28,6 +28,13 @@ public class Management {
 		return management;
 	}
 	
+	public void init() {
+		Dir d1 = management.makeDir("d1");
+		management.makeFile("f1");
+		management.selectDir(d1);
+		management.makeFile("f2");
+	}
+	
 	//默认新建C盘,大小为128个盘块
 	private Management() {
 		this.now_disk = new Disk("C", 128);
@@ -55,6 +62,15 @@ public class Management {
 			}
 		}
 		return flag;
+	}
+	
+	//改变当前目录
+	public void changeDir(Dir dir) {
+		this.pwd = dir;
+		this.disk_path = this.pwd.getDiskPath();
+		if(!dir.getDisk().getDisk_id().equals(this.now_disk.getDisk_id())) {
+			this.now_disk = dir.getDisk();
+		}
 	}
 	
 	//新建磁盘,传入盘符和盘块数,结果为null则存在相同盘符名
