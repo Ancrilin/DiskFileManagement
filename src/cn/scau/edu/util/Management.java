@@ -3,6 +3,7 @@ package cn.scau.edu.util;
 import java.util.ArrayList;
 import java.util.List;
 
+import client.MainUIController;
 import cn.scau.edu.base.Dir;
 import cn.scau.edu.base.Disk;
 import cn.scau.edu.base.File;
@@ -17,6 +18,7 @@ public class Management {
 	private Disk now_disk;
 	private String path;//当前绝对路径
 	private Dir now_root;
+	private File now_File;
 	private String disk_path;
 	private Buffer buffer1 = new Buffer();//双缓冲
 	private Buffer buffer2 = new Buffer();
@@ -28,11 +30,21 @@ public class Management {
 		return management;
 	}
 	
+	public File getNowFile() {
+		return this.now_File;
+	}
+	
+	//磁盘调用api
 	public void init() {
-		Dir d1 = management.makeDir("d1");
-		management.makeFile("f1");
-		management.selectDir(d1);
-		management.makeFile("f2");
+		Dir d1 = this.makeDir("d1");
+		this.makeDir("d2");
+		this.makeFile("f1");
+		this.selectDir(d1);
+		Dir d3 = this.makeDir("d3");
+		this.makeFile("f2");
+		this.selectDir(d3);
+		this.makeDir("d4");
+		this.changeDir(this.getNow_root());
 	}
 	
 	//默认新建C盘,大小为128个盘块
@@ -44,15 +56,18 @@ public class Management {
 		this.disk_path = this.now_root.getDiskPath();
 //		this.path = this.now_root.getPath();
 		this.openedTable = OpenedTable.getInstance();
+		
 	}
 	
 	//磁盘调用api
 	
-	//切换磁盘,传入盘符，如果结果为false则不存在该盘符,每次切换磁盘时都默认修改pwd当前目录为切换后磁盘的根目录
+	//切换磁盘,传入盘符，如果结果为false则不存在该盘符,每次切换磁盘时
 	public boolean changeDisk(String disk_name) {
 		boolean flag = false;
 		for(int i=0;i<this.disk_list.size();i++) {
-			if(this.disk_list.get(i).getDisk_id().equals(disk_name)) {
+			if(this.disk_list.get(i).getDisk_id().equals
+
+(disk_name)) {
 				this.now_disk = this.disk_list.get(i);
 				this.now_root = this.now_disk.getRoot();
 				this.pwd = this.now_root;
@@ -66,13 +81,18 @@ public class Management {
 	
 	public void selectedFile(File file) {
 		this.changeDir(file.getParent());
+		System.out.println("file: "+file.getName());
+		this.now_File = file;
 	}
 	
 	//改变当前目录
 	public void changeDir(Dir dir) {
+		System.out.println("dir: "+dir.getName());
 		this.pwd = dir;
 		this.disk_path = this.pwd.getDiskPath();
-		if(!dir.getDisk().getDisk_id().equals(this.now_disk.getDisk_id())) {
+		if(!dir.getDisk().getDisk_id().equals
+
+(this.now_disk.getDisk_id())) {
 			this.now_disk = dir.getDisk();
 		}
 	}
@@ -128,7 +148,7 @@ public class Management {
 	
 	//删除目录，只能删除空目录,false可能该目录不为空目录,或该目录为系统目录
 	public boolean removeDir(Dir dir) {
-		if(dir.isOrdinaryFile()) {//普通文件或目录才可以删除
+		if(!dir.getName().equals(dir.getDisk().getRoot().getName())) {//普通文件或目录才可以删除
 			return this.now_disk.getFat().deleteDir(dir);
 		}else {
 			return false;
@@ -213,12 +233,11 @@ public class Management {
 		return flag;
 	}
 	
-	//打开文件,读与写一起
-	public File openFile() {
-		File file = null;
-		
-		return file;
-	}
+//	//打开文件,读与写一起
+//	public File openFile() {
+//		File file = null;
+//		return file;
+//	}
 	
 	//读文件,不能写,从文件指针读length长度，遇到文件结束时则返回不足长度
 	public String readFile(File file, int length) {
@@ -228,6 +247,7 @@ public class Management {
 			if(open==false) {//打开失败
 				return null;
 			}
+			MainUIController.getInstance().updateOpenedFileNum();
 		}
 		data = this.getNow_disk().getFat().readFile(file, length, openedTable.getOFFile(file));
 		return new String(data);
@@ -241,6 +261,7 @@ public class Management {
 			if(open==false) {//打开失败
 				return null;
 			}
+			MainUIController.getInstance().updateOpenedFileNum();
 		}
 		data = this.getNow_disk().getFat().typeFile(file);
 		return new String(data);
@@ -257,6 +278,7 @@ public class Management {
 			if(open==false) {//打开失败
 				return false;
 			}
+			MainUIController.getInstance().updateOpenedFileNum();
 		}
 		if(OpenedTable.getInstance().getFlag(file)==0) {//该文件以只读方式打开
 			OpenedTable.getInstance().setFlag(file, 1);//设置为写方式打开

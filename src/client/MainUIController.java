@@ -5,6 +5,7 @@ import java.util.ResourceBundle;
 
 import cn.scau.edu.base.File;
 import cn.scau.edu.util.Management;
+import cn.scau.edu.util.OpenedTable;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
@@ -26,13 +27,7 @@ import javafx.scene.text.Text;
 
 public class MainUIController implements Initializable{
 
-	
-
-
-
-
-
-	private static MainUIController mainUIController;
+	//private static MainUIController mainUIController;
     @FXML
     private VBox VBox1;
 
@@ -68,6 +63,9 @@ public class MainUIController implements Initializable{
 
     @FXML
     private Label Label4;
+    
+    @FXML
+    private Label openedFileNum;
 
     @FXML
     private TreeView<?> TreeView1;
@@ -75,50 +73,33 @@ public class MainUIController implements Initializable{
     @FXML
     private AnchorPane AnchorPane;
     
+    private static MainUIController mainController = null;
     private TreeView<String> nodeTreeView;
-
+	private ContextMenu directoryMenu = new ContextMenu();
+	private ContextMenu textMenu = new ContextMenu();
+	private ContextMenu excuteMenu = new ContextMenu();
+	private ContextMenu rootMenu = new ContextMenu();
     
+    public MainUIController() {
+    	ControllerContainer.controllerContainer.put(this.getClass().getSimpleName(), this);
+    }
     
+    public static MainUIController getInstance() {
+    	return mainController;
+    }
    
     
 	@Override
 	public void initialize(URL location, ResourceBundle resources) {
 		// TODO Auto-generated method stub
 		Management DM = Management.getInstance();
-		DM.initManage();
-		FileView fv = new FileView(this.mainUIController,this.TreeView1);
+		DM.init();
+		FileView fv = new FileView(this,this.TreeView1);
 		ProgressIndicator1.setProgress((double)(128-DM.getNowDiskFreeSpace())/128);
-//		TreeView1.addEventFilter(MouseEvent.MOUSE_CLICKED, new EventHandler<MouseEvent>() {
-//    		//重写EventHandler接口实现方法
-//    		@Override
-//    		public void handle(MouseEvent event) {
-//    			//执行事件发生后的动作
-//    			//System.out.println(event.getButton().name().equals(MouseButton.PRIMARY.name()));
-//    			if(event.getButton().name().equals(MouseButton.SECONDARY.name())){ 
-//    				//System.out.println("11111111111");
-//    				setContextMenu(dirRightClick);
-//    					
-//    					
-//    			}
-//    		}
-//    	});	
-		
-	  
-		
+		mainController = this;
 	}
 	
 	
-	/* public void rootAction() {//磁盘右键
-	MenuItem addDisk = new MenuItem("新建磁盘");
-	rootMenu.getItems().add(addDisk);
-	addDisk.setOnAction(e->{
-		DM.newDisk("新建磁盘", 128);
-		
-	});
-}*/
-
-
-
 	
 
 	
@@ -130,15 +111,19 @@ public class MainUIController implements Initializable{
 			this.TextFiel2.setText("普通文件");
 		}
 		else this.TextFiel2.setText("系统文件");
+		System.out.println(f.isOrdinaryFile());
+		System.out.println(f.isSystemFile());
 		this.TextFiel3.setText(f.getByte_num()+"KB");
 		if(f.isOnlyReadFile())
 		{
 			this.TextFiel4.setText("是");
 		}
 		else this.TextFiel4.setText("否");
+		
 	}
     
     
+	
 	
 	
 	
@@ -166,7 +151,10 @@ public class MainUIController implements Initializable{
 	}
 
 
-
+	public void updateOpenedFileNum() {
+		int num = OpenedTable.getInstance().getOpenedSize();
+		this.openedFileNum.setText(String.valueOf(num)+"/5");
+	}
 
 
 
@@ -174,7 +162,13 @@ public class MainUIController implements Initializable{
 		TreeView1 = treeView1;
 	}
 
-    
+    public MainUIController getMain() {
+    	return this;
+    }
 
+    
+    public void updateProgress() {
+    	MainUIController.getInstance().getProgressIndicator1().setProgress((double)(128-Management.getInstance().getNowDiskFreeSpace())/128);
+    }
 }
 

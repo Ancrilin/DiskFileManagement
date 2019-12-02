@@ -3,6 +3,9 @@ package cn.scau.edu.base;
 import java.util.ArrayList;
 import java.util.List;
 
+import client.TreeNode;
+import javafx.scene.control.TreeItem;
+
 public class Dir implements Super{
 	private String name;
 	private int block_start;//目录所在盘块,目录文件只有一个盘块
@@ -12,6 +15,7 @@ public class Dir implements Super{
 	private Disk disk;
 	private String disk_path;
 	private String path;//绝对路径
+	private TreeItem<TreeNode> treeItem = null;
 	
 	public Dir(String name, Dir parent, Disk disk) {//目录名，父目录，磁盘
 		this.name = name;
@@ -153,6 +157,7 @@ public class Dir implements Super{
 
 	public void setBlock_start(int block_start) {
 		this.block_start = block_start;
+//		this.setOrdinaryFile();
 	}
 
 //	public void setPath(String path) {
@@ -185,7 +190,7 @@ public class Dir implements Super{
 		if(this.getDisk().getFat().getBlocks()[this.block_start].getBlockData()[4]==1) {
 			flag = true;
 		}
-		return flag;
+		return true;
 	}
 	
 	//设置系统文件
@@ -231,5 +236,13 @@ public class Dir implements Super{
 		this.getDisk().getFat().getBlocks()[this.block_start].getBlockData()[6]=0;
 		this.getDisk().getFat().getBlocks()[this.block_start].getBlockData()[5]=1;
 		return true;
+	}
+	
+	public void setTreeItem(TreeItem node) {
+		this.treeItem = node;
+	}
+	
+	public TreeItem getTreeItem() {
+		return this.treeItem;
 	}
 }

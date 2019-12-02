@@ -19,9 +19,8 @@ public class Main extends Application {
 	       	Parent r = FXMLLoader.load(getClass().getResource("MainUI.fxml"));
 	       	//AnchorPane anchorpane = new AnchorPane();
 	       	Scene s = new Scene(r);
-	       //	MainUIController mc = new MainUIController();
+	       	//MainUIController mc = new MainUIController();
 	       	//TreeView<String> tv = new TreeView<> (Management.getInstance());
-	       	
 	           primaryStage.setScene(s);
 	           primaryStage.setResizable(false);//设置不能窗口改变大小
 	           primaryStage.show();

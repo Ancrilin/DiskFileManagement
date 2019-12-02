@@ -1,8 +1,15 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import javafx.scene.control.*?>
+<?import java.lang.*?>
+<?import javafx.scene.layout.*?>
 <?import javafx.scene.layout.AnchorPane?>
 
-<AnchorPane xmlns:fx="http://javafx.com/fxml/1">
-	<!-- TODO Add Nodes -->
+<AnchorPane prefHeight="365.0" prefWidth="394.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="client.OpenFileController">
+   <children>
+      <TextArea fx:id="textArea1" layoutX="34.0" layoutY="14.0" prefHeight="208.0" prefWidth="329.0" />
+      <TextField fx:id="textField1" layoutX="34.0" layoutY="280.0" prefHeight="36.0" prefWidth="262.0" />
+      <Button fx:id="btn1" layoutX="315.0" layoutY="288.0" mnemonicParsing="false" onAction="#onButtonClickedWrite" text="写入" />
+      <Label fx:id="label2" layoutX="78.0" layoutY="326.0" prefHeight="17.0" prefWidth="162.0" textFill="#210be1" />
+   </children>
 </AnchorPane>
-

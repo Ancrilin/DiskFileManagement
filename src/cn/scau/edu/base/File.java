@@ -1,6 +1,8 @@
 package cn.scau.edu.base;
 
+import client.TreeNode;
 import cn.scau.edu.util.Pointer;
+import javafx.scene.control.TreeItem;
 
 public class File implements Super{
 	private String name;//文件名
@@ -14,6 +16,7 @@ public class File implements Super{
 	private Pointer read;
 	private Pointer write;
 	private int byte_num;//字节数，文件大小
+	private TreeItem<TreeNode> treeItem = null;
 	
 	public File(String name, Dir parent, Disk disk) {
 		this.name = name;
@@ -65,6 +68,7 @@ public class File implements Super{
 		this.write.setBlock_num(this.block_start);
 		this.write.setByte_num(8);//跳过属性
 		this.byte_num = 0;
+		this.setOrdinaryFile();
 	}
 
 	public Dir getParent() {
@@ -179,6 +183,16 @@ public class File implements Super{
 		this.getDisk().getFat().getBlocks()[this.block_start].getBlockData()[6]=0;
 		this.getDisk().getFat().getBlocks()[this.block_start].getBlockData()[5]=1;
 		return true;
+	}
+	
+	public TreeItem<TreeNode> getTreeItem()
+	{
+		return this.treeItem;
+	}
+	
+	public void setTreeItem(TreeItem<TreeNode> node)
+	{
+		this.treeItem = node;
 	}
 	
 }

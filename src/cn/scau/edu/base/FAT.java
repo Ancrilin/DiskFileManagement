@@ -1,5 +1,6 @@
 package cn.scau.edu.base;
 
+import client.MainUIController;
 import cn.scau.edu.util.Buffer;
 import cn.scau.edu.util.MainMemory;
 import cn.scau.edu.util.OFFile;
@@ -160,6 +161,7 @@ public class FAT {
 			this.releaseBlock(index);//释放盘块
 			flag = true;
 		}
+		
 		return flag;//可能该目录为空目录
 	}
 	
@@ -275,6 +277,7 @@ public class FAT {
 		boolean flag = false;
 		if(OpenedTable.getInstance().isExist(file)) {
 			flag = OpenedTable.getInstance().removeOFFile(file);
+			MainUIController.getInstance().updateOpenedFileNum();
 		}
 		return flag;
 	}

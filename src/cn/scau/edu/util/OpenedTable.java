@@ -3,6 +3,7 @@ package cn.scau.edu.util;
 import java.util.ArrayList;
 import java.util.List;
 
+import client.MainUIController;
 import cn.scau.edu.base.File;
 
 public class OpenedTable {
@@ -34,6 +35,7 @@ public class OpenedTable {
 			new_one.setRead(file.getRead().getBlock_num(), file.getRead().getByte_num());
 			new_one.setWrite(file.getWrite().getBlock_num(), file.getWrite().getByte_num());
 			this.table.add(new_one);
+			MainUIController.getInstance().updateOpenedFileNum();
 			result = true;
 		}
 		return result;
@@ -57,6 +59,7 @@ public class OpenedTable {
 		for(int i=0;i<this.table.size();i++) {
 			if(this.table.get(i).getDisk_path().equals(file.getDisk_path())) {
 				this.table.remove(i);
+				MainUIController.getInstance().updateOpenedFileNum();
 				flag = true;
 				break;
 			}

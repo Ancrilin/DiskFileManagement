@@ -6,6 +6,7 @@ import cn.scau.edu.base.Dir;
 import cn.scau.edu.base.Super;
 
 public class TreeNode {
+	
 	private Super DirOrFile = null;
 	
 	
@@ -39,7 +40,7 @@ public class TreeNode {
 				return dir.getName();
 			}
 			
-			if(!DirOrFile.isDir())
+			if(!DirOrFile.isDir()) {
 				File f = (File)DirOrFile;
 				return f.getName();
 			}
