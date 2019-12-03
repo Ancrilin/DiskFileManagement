@@ -9,6 +9,7 @@ import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.event.EventHandler;
 import javafx.scene.Group;
+import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.ContentDisplay;
 import javafx.scene.control.ContextMenu;
@@ -17,6 +18,7 @@ import javafx.scene.control.Label;
 import javafx.scene.control.TreeCell;
 import javafx.scene.control.TreeItem;
 import javafx.scene.control.TreeView;
+import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
@@ -34,22 +36,24 @@ public class FileView {
 	private static MainUIController mainUIController;
 	private ChangeListener<TreeItem<TreeNode>> e;
     private static MainUIController MC;
+    public static Dir com = new Dir("我的电脑");
     
-	
 	public FileView(MainUIController mainUIController,TreeView tree) {
 		this.mainUIController=mainUIController;
 		this.treeView=tree;
-		TreeItem<TreeNode> node = new TreeItem<TreeNode>(new TreeNode(DM.getNow_root()));
-		DM.getNow_root().setTreeItem(node);
-		rootNode = node;//初始化目录树节点
+//		TreeItem<TreeNode> node = new TreeItem<TreeNode>(new TreeNode(DM.getNow_root()));
+//		DM.getNow_root().setTreeItem(node);
+//		rootNode = node;//初始化目录树节点
+		rootNode = new TreeItem<TreeNode>(new TreeNode(com));
+		rootNode.setGraphic(MainUIController.getInstance().getComputerIcon());
+		com.setTreeItem(rootNode);
+//		rootNode.getChildren().add(node);
 		rootNode.setExpanded(true);
 		treeView.setRoot(rootNode);
-		initTreeView(mainUIController);
-		
-		
+//		initTreeView(mainUIController,node);
 	}
 	
-	public void initTreeView(MainUIController mainUIController) {				//初始化目录树
+	public void initTreeView(MainUIController mainUIController,TreeItem<TreeNode> node) {				//初始化目录树
 		
 //		treeView.getSelectionModel().selectedItemProperty().addListener(e = new ChangeListener<TreeItem<TreeNode>>() {
 //			@Override
@@ -70,14 +74,42 @@ public class FileView {
 //				
 //			}	
 //		});
-	
 		this.mainUIController = mainUIController;
 		if(!DM.getPwd().getDir_list().isEmpty())
 		{
-			
-			initTreeNode(DM.getPwd(), rootNode);
+			initTreeNode(DM.getPwd(), node);
 			
 		}
+		
+		treeView.setEditable(true);
+        treeView.setCellFactory(new Callback<TreeView<TreeNode>,TreeCell<TreeNode>>(){
+            @Override
+            public TreeCell<TreeNode> call(TreeView<TreeNode> p) {
+            	//System.out.println(mainUIController);
+                return new TreeNodeCell(mainUIController);
+            }
+        });
+        
+	}
+	
+	
+	
+	public void initTreeView(Disk disk) {				//初始化目录树
+		
+		
+//		Management.getInstance().changeDirFromRoot(disk.getDisk_id());
+//		if(!Management.getInstance().getPwd().getDir_list().isEmpty())
+//		{
+//			
+//			initTreeNode(Management.getInstance().getPwd(), disk.getRoot().getTreeItem());
+//			
+//		}
+//		
+		
+		
+		
+		
+		
 		
 		treeView.setEditable(true);
         treeView.setCellFactory(new Callback<TreeView<TreeNode>,TreeCell<TreeNode>>(){
@@ -102,6 +134,7 @@ public class FileView {
     			for (Dir child : dir.getDir_list()) 
     			{	
     				TreeItem<TreeNode> child_Item = new TreeItem(new TreeNode(child));
+    				child_Item.setGraphic(MainUIController.getInstance().getDirIcon());
     				child.setTreeItem(child_Item);
     				//TreeItem<TreeNode> newNode = new TreeItem<TreeNode>(child_node);
     				parentNode.getChildren().add(child_Item);
@@ -118,10 +151,31 @@ public class FileView {
     				for(File file: dir.getFile_list())
     				{
     					TreeItem<TreeNode> newNode = new TreeItem<TreeNode>(new TreeNode(file));
+    					newNode.setGraphic(MainUIController.getInstance().getFileIcon());
     					file.setTreeItem(newNode);
     					parentNode.getChildren().add(newNode);
     				}
     			}
+    	}
+    	
+    	public static void newDisk(Disk disk) {
+    		disk.getRoot().setParent(FileView.com);
+    		TreeItem<TreeNode> diskrootTreeItem = new TreeItem<TreeNode>(new TreeNode(disk.getRoot()));
+    		diskrootTreeItem.setGraphic(MainUIController.getInstance().getDiskIcon());
+    		disk.getRoot().setTreeItem(diskrootTreeItem);
+    		diskrootTreeItem.setExpanded(true);
+    		FileView.com.getTreeItem().getChildren().add(diskrootTreeItem);
+    		FileView.initTreeNode(disk.getRoot(), diskrootTreeItem);
+    		
+    		
+    		treeView.setEditable(true);
+            treeView.setCellFactory(new Callback<TreeView<TreeNode>,TreeCell<TreeNode>>(){
+                @Override
+                public TreeCell<TreeNode> call(TreeView<TreeNode> p) {
+                	//System.out.println(mainUIController);
+                    return new TreeNodeCell(mainUIController);
+                }
+            });
     	}
     	
     	
@@ -131,16 +185,18 @@ public class FileView {
     		if(new_super.isDir()) {
     			Dir dir = (Dir)new_super;
     			child = new TreeItem<TreeNode>(new TreeNode(new_super));
+    			child.setGraphic(MainUIController.getInstance().getDirIcon());
     			dir.setTreeItem(child);
     		}else {
     			File file = (File)new_super;
     			child = new TreeItem<TreeNode>(new TreeNode(new_super));
+    			child.setGraphic(MainUIController.getInstance().getFileIcon());
     			file.setTreeItem(child);
     			//System.out.println("file child: "+child);
     		}
-    		System.out.println(parentNode);//
+//    		System.out.println(parentNode);//
     		 boolean result = parentNode.getChildren().add(child);
-    		 System.out.println("add tree result: "+result);
+//    		 System.out.println("add tree result: "+result);
     	}
         
 	  
@@ -154,7 +210,7 @@ public class FileView {
     		}else {
     			child = new TreeItem<TreeNode>(new TreeNode(new_super));
     		}
-    		System.out.println(parentNode);//
+//    		System.out.println(parentNode);//
     		
     	 return	parentNode.getChildren().remove(child);
     		 

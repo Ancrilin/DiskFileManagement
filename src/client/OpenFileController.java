@@ -36,7 +36,7 @@ public class OpenFileController implements Initializable {
 		File file = Management.getInstance().getNowFile();
 		String data =  Management.getInstance().typeFile(file);
 		if(data == null) {
-			System.out.println("read fail");
+//			System.out.println("read fail");
 		}
 		this.textArea1.appendText(data);
 		this.textArea1.setEditable(false);
@@ -58,6 +58,7 @@ public class OpenFileController implements Initializable {
 				if(result) {
 					this.label2.setText("写入成功！");
 					Management.getInstance().updateBuffer();
+					MainUIController.getInstance().showProperty(file);
 					String input = textField1.getText();
 					char [] input2 = new char[input.length()-1];
 					for(int i=0;i<input.length()-1;i++) {

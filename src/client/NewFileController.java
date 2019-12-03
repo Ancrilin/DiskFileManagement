@@ -42,12 +42,11 @@ public void onButtonClickedNewFile(ActionEvent e) {
 		if(!this.textField1.getText().equals(""))
 		{
 			File file = Management.getInstance().makeFile(this.textField1.getText());
-			System.out.println(file);
 			if(file!=null) {
-				System.out.println("make file success!");
 				this.label2.setText("新建文件成功!");
 				client.FileView.addDirTreeNode(file, file.getParent().getTreeItem());
 				MainUIController.getInstance().updateProgress();
+				file.getParent().getTreeItem().setExpanded(true);
 			}else {
 				this.label2.setText("新建文件失败，有重复文件名！!");
 			}

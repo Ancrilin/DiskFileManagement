@@ -42,12 +42,11 @@ public class NewDirController implements Initializable{
 		if(!this.textField1.getText().equals(""))
 		{
 			Dir dir = Management.getInstance().makeDir(this.textField1.getText());
-			dir.setTreeItem(new TreeItem<TreeNode> (new TreeNode(dir)));
 			if(dir!=null) {
-				System.out.println("make dir success!");
-				this.label2.setText("新建目录成功!");
+				dir.setTreeItem(new TreeItem<TreeNode> (new TreeNode(dir)));
 				client.FileView.addDirTreeNode(dir, dir.getParent().getTreeItem());
 				MainUIController.getInstance().updateProgress();
+				dir.getParent().getTreeItem().setExpanded(true);
 			}else {
 				this.label2.setText("新建目录失败，有重复文件名！!");
 			}

@@ -34,6 +34,7 @@ public class FAT {
 			Dir root = this.newDir(this.getDisk_id(), null);
 			//root.setDir();//设置为目录
 			root.setSystemFile();//为系统目录文件，不能删除
+			
 			this.root = root;
 		}
 		return root;
@@ -217,6 +218,7 @@ public class FAT {
 	
 	//读文件,要读的文件必须先打开,从读指针开始读,不会把#读出来
 	public byte[] readFile(File file, int length, OFFile offile) {
+		length = length * 2;//转换后的编码实际字节长度
 		byte[] t_data = new byte[length];//创建要读取的长度字节数组
 		int block_read = offile.getRead().getBlock_num();//读指针盘块
 		int byte_read = offile.getRead().getByte_num();//读指针字节位置
@@ -225,7 +227,7 @@ public class FAT {
 			if(!MainMemory.getInstance().isBlockExist(this.blocks[block_read], block_read, this.disk)) {//盘块要先读入内存
 				MainMemory.getInstance().addToMemory(this.blocks[block_read], block_read, this.disk);
 			}
-			if(this.getBlocks()[block_read].getBlockData()[byte_read]=='#') {//长度不够真实长度,'#'为文件结束,不读取#,指针不移动
+			if(this.getBlocks()[block_read].getBlockData()[byte_read]==35&&this.getBlocks()[block_read].getBlockData()[byte_read+1]==0) {//长度不够真实长度,'#'为文件结束,不读取#,指针不移动
 				break;
 			}
 			t_data[i] = this.getBlocks()[block_read].getBlockData()[byte_read];
@@ -254,7 +256,9 @@ public class FAT {
 		int n_length = 0;//实际写入文件长度
 		for(int i=0;i<length;i++) {
 			this.blocks[block_write].getBlockData()[byte_write] = data[i];
-			if(data[i] == '#') {//结束符,不用指向下一字节,下次直接覆盖#
+			if(data[i] == 35 && data[i+1]== 0) {//结束符,不用指向下一字节,下次直接覆盖#
+				byte_write++;
+				this.blocks[block_write].getBlockData()[byte_write] = data[i+1];
 				break;
 			}
 			n_length++;//档次写入长度没有包含#
@@ -267,6 +271,8 @@ public class FAT {
 				file.setBlocks_num(file.getBlocks_num()+1);//文件盘块数+1
 			}
 		}
+		byte_write--;//指针回退
+//		System.out.println("byte_write: "+byte_write);
 		file.setWrite(block_write, byte_write);//修改文件写指针
 		offile.setWrite(block_write, byte_write);//设置已打开文件表写指针
 		file.setByte_num(file.getByte_num()+n_length);//文件大小增加,不包含#
@@ -290,7 +296,7 @@ public class FAT {
 			if(!MainMemory.getInstance().isBlockExist(this.blocks[block_read], block_read, this.disk)) {//盘块要先读入内存
 				MainMemory.getInstance().addToMemory(this.blocks[block_read], block_read, this.disk);
 			}
-			if(this.getBlocks()[block_read].getBlockData()[byte_read]=='#') {//长度不够真实长度,'#'为文件结束,不读取#,指针不移动
+			if(this.getBlocks()[block_read].getBlockData()[byte_read]==35&&this.getBlocks()[block_read].getBlockData()[byte_read+1]==0) {//长度不够真实长度,'#'为文件结束,不读取#,指针不移动
 				break;
 			}
 			data[i] = this.blocks[block_read].getBlockData()[byte_read];

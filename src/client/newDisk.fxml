@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import java.lang.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.layout.AnchorPane?>
+
+<AnchorPane prefHeight="121.0" prefWidth="348.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="client.newDisk">
+   <children>
+      <Label fx:id="label1" layoutX="14.0" layoutY="14.0" text="磁盘序号：" />
+      <TextField fx:id="textField1" layoutX="91.0" layoutY="10.0" prefHeight="25.0" prefWidth="198.0" />
+      <Label fx:id="label3" layoutX="88.0" layoutY="83.0" prefHeight="17.0" prefWidth="173.0" textFill="#400ccd" />
+      <Button fx:id="button1" layoutX="294.0" layoutY="48.0" mnemonicParsing="false" onAction="#newDisk" text="新建" />
+      <TextField fx:id="textField2" layoutX="91.0" layoutY="48.0" prefHeight="25.0" prefWidth="198.0" />
+      <Label fx:id="label2" layoutX="14.0" layoutY="52.0" text="盘块数：" />
+   </children>
+</AnchorPane>

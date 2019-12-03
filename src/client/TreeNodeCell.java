@@ -18,6 +18,7 @@ import javafx.scene.control.TextField;
 import javafx.scene.control.TreeCell;
 import javafx.scene.control.TreeItem;
 import javafx.scene.control.TreeView;
+import javafx.scene.image.Image;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseButton;
@@ -29,9 +30,9 @@ public final class TreeNodeCell extends TreeCell<TreeNode> {
 	
 	private static MainUIController MC;
 	private TextField textField;
-    private final ContextMenu addMenu = new ContextMenu();
     private ContextMenu dirRightClickFile = new ContextMenu();
     private ContextMenu  dirRightClickDir = new ContextMenu();
+    private ContextMenu diskClick = new ContextMenu();
     private static TreeView<TreeNode> treeView;
 	MenuItem paste = new MenuItem("粘贴");
 	private boolean flag = true;
@@ -42,6 +43,7 @@ public final class TreeNodeCell extends TreeCell<TreeNode> {
     	DM = Management.getInstance();
     	fileAction();
     	dirAction();
+    	diskAction();
     	//this.MC = mainUIController;
     	//this.treeView = treeView;
 		this.addEventFilter(MouseEvent.MOUSE_CLICKED, new EventHandler<MouseEvent>() {
@@ -64,7 +66,6 @@ public final class TreeNodeCell extends TreeCell<TreeNode> {
 			}
 //			System.out.println(getTreeItem().getValue().getSuper().isDir());
 			if(event.getButton().name().equals(MouseButton.SECONDARY.name())&&!getTreeItem().getValue().getSuper().isDir()){ 
-//				System.out.println("11111111111");
 				setContextMenu(dirRightClickFile);
 				File file = (File)getTreeItem().getValue().getSuper();
 				Management.getInstance().selectedFile(file);
@@ -73,6 +74,12 @@ public final class TreeNodeCell extends TreeCell<TreeNode> {
 				Dir dir = null;
 				if(event.getButton().name().equals(MouseButton.SECONDARY.name())) {
 					dir = (Dir)getTreeItem().getValue().getSuper();
+					
+				}
+				if(dir!=null&&dir.getName().equals(FileView.com.getName())) {
+//					System.out.println("com: "+dir.getName());
+					setContextMenu(diskClick);
+					return;
 				}
 				if(dir!=null)
 					Management.getInstance().changeDir(dir);
@@ -93,13 +100,23 @@ public final class TreeNodeCell extends TreeCell<TreeNode> {
     	dirRightClickFile.getItems().addAll(open,read,write,delete,close,change);
     	
     	open.setOnAction(e->{
-    		System.out.println("打开文件");
+    		Image image = new Image("file:res/open.png",20,20,false,false);
+//    		System.out.println("打开文件");
+    		File file = Management.getInstance().getNowFile();
+//    		System.out.println("file path: "+file.getDisk_path());
+    		if(!OpenedTable.getInstance().isExist(Management.getInstance().getNowFile())) {
+    			boolean result = OpenedTable.getInstance().add(Management.getInstance().getNowFile(), 1);//写打开文件
+    			if(result == false)
+    				return;
+    		}
     		try {
     			Stage stage=new Stage();
     	       	Parent r = FXMLLoader.load(getClass().getResource("OpenFile.fxml"));
     	       	Scene s = new Scene(r);
     	       	stage.setScene(s);
     	       	stage.setResizable(false);//设置不能窗口改变大小
+    	       	stage.setTitle("Open File");
+    	       	stage.getIcons().add(image);
     	       	stage.show();
     	       	
     	           
@@ -110,42 +127,37 @@ public final class TreeNodeCell extends TreeCell<TreeNode> {
     	});
     	
     	delete.setOnAction(e->{				//删除有问题！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！
-    		System.out.println("删除");
-    		
+ 
     		File file = Management.getInstance().getNowFile();
-    		
-    		//TreeItem<TreeNode> selectItem = treeView.getSelectionModel().getSelectedItem();
-    		//System.out.println(selectItem);
-    		
     		boolean result = Management.getInstance().deleteFile(Management.getInstance().getNowFile());
-    		System.out.println(file.getName());
-    		System.out.println("delete result: "+result);
-    		System.out.println("size1: "+file.getParent().getTreeItem().getChildren().size());
     		if(result)
     		{
     			file.getParent().getTreeItem().getChildren().remove(file.getTreeItem());
-    			System.out.println("size2: "+file.getParent().getTreeItem().getChildren().size());
-    			System.out.println("删除成功！");
+    			MainUIController.getInstance().updateProgress();
     		}
-    		else System.out.println("删除失败");
-    		
     	
     	});
     	
     	write.setOnAction(e->{
+    		File file = Management.getInstance().getNowFile();
+    		if(!OpenedTable.getInstance().isExist(Management.getInstance().getNowFile())) {
+    			boolean result = OpenedTable.getInstance().add(Management.getInstance().getNowFile(), 1);//读打开文件
+    			if(result == false)
+    				return;
+    		}
     		if(getTreeItem().getValue().getSuper().isOnlyReadFile()) {
     			return;
     		}
     		if(!OpenedTable.getInstance().isExist(Management.getInstance().getNowFile())) {
     			OpenedTable.getInstance().add(Management.getInstance().getNowFile(), 1);//写打开文件
     		}
-    		System.out.println("只写");
     		try {
     			Stage stage=new Stage();
     	       	Parent r = FXMLLoader.load(getClass().getResource("writeOnly.fxml"));
     	       	Scene s = new Scene(r);
     	       	stage.setScene(s);
     	       	stage.setResizable(false);//设置不能窗口改变大小
+    	       	stage.setTitle("Write File");
     	       	stage.show();
     	       	
     	   
@@ -156,8 +168,12 @@ public final class TreeNodeCell extends TreeCell<TreeNode> {
     	});
     	
     	read.setOnAction(e->{
+    		File file = Management.getInstance().getNowFile();
+//    		System.out.println("file path: "+file.getDisk_path());
     		if(!OpenedTable.getInstance().isExist(Management.getInstance().getNowFile())) {
-    			OpenedTable.getInstance().add(Management.getInstance().getNowFile(), 0);//读打开文件
+    			boolean result = OpenedTable.getInstance().add(Management.getInstance().getNowFile(), 0);//读打开文件
+    			if(result == false)
+    				return;
     		}
     		try {
     			Stage stage=new Stage();
@@ -165,6 +181,7 @@ public final class TreeNodeCell extends TreeCell<TreeNode> {
     	       	Scene s = new Scene(r);
     	       	stage.setScene(s);
     	       	stage.setResizable(false);//设置不能窗口改变大小
+    	       	stage.setTitle("Read File");
     	       	stage.show();
     	       	
     	   
@@ -183,6 +200,7 @@ public final class TreeNodeCell extends TreeCell<TreeNode> {
     	       	Scene s = new Scene(r);
     	       	stage.setScene(s);
     	       	stage.setResizable(false);//设置不能窗口改变大小
+    	       	stage.setTitle("Change File Property");
     	       	stage.show();
     	       	
     	   
@@ -198,7 +216,7 @@ public final class TreeNodeCell extends TreeCell<TreeNode> {
     	close.setOnAction(e->{
     		File file = Management.getInstance().getNowFile();
     		boolean result = Management.getInstance().closeFile(file);
-    		System.out.println("close result: "+result);
+//    		System.out.println("close result: "+result);
     	});
     }
 
@@ -209,6 +227,7 @@ public final class TreeNodeCell extends TreeCell<TreeNode> {
     	dirRightClickDir.getItems().addAll(newDir,newFile,delete);
 
     	newDir.setOnAction(e->{
+    		Image image = new Image("file:res/add.png",20,20,false,false);
     		try {
     			
     			Stage stage=new Stage();
@@ -216,6 +235,8 @@ public final class TreeNodeCell extends TreeCell<TreeNode> {
     	       	Scene s = new Scene(r);
     	       	stage.setScene(s);
     	       	stage.setResizable(false);//设置不能窗口改变大小
+    	       	stage.setTitle("New Dir");
+    	       	stage.getIcons().add(image);
     	       	stage.show();
 
     	   	 } catch(Exception e1) {
@@ -225,7 +246,7 @@ public final class TreeNodeCell extends TreeCell<TreeNode> {
     	});
     	
     	delete.setOnAction(e -> {
-    		System.out.println("删除目录");
+//    		System.out.println("删除目录");
     		
     		Dir dir = Management.getInstance().getPwd();
     		if(!dir.getName().equals(dir.getDisk().getRoot().getName())) {
@@ -237,18 +258,19 @@ public final class TreeNodeCell extends TreeCell<TreeNode> {
         		if(result)
         		{
         			
-        			System.out.println("删除成功！");
+//        			System.out.println("删除成功！");
         			System.out.println(dir.getName());
         			dir.getParent().getTreeItem().getChildren().remove(dir.getTreeItem());
         			MainUIController.getInstance().updateProgress();
         		}
-        		else System.out.println("删除失败");
+//        		else System.out.println("删除失败");
     		}
     		
     	});
     	
     	newFile.setOnAction(e->{
-    		System.out.println("新建文件");
+    		Image image = new Image("file:res/add.png",20,20,false,false);
+//    		System.out.println("新建文件");
     		try {
     			
     			Stage stage=new Stage();
@@ -256,6 +278,8 @@ public final class TreeNodeCell extends TreeCell<TreeNode> {
     	       	Scene s = new Scene(r);
     	       	stage.setScene(s);
     	       	stage.setResizable(false);//设置不能窗口改变大小
+    	       	stage.setTitle("New File");
+    	       	stage.getIcons().add(image);
     	       	stage.show();
     	       	
     	       	
@@ -266,6 +290,34 @@ public final class TreeNodeCell extends TreeCell<TreeNode> {
     	});	
     }
    
+     
+     public void diskAction(){//磁盘目录
+    	 
+     	MenuItem newDisk = new MenuItem("新建磁盘");
+
+     	diskClick.getItems().addAll(newDisk);
+
+     	newDisk.setOnAction(e->{
+     		Image image = new Image("file:res/add.png",20,20,false,false);
+     		try {
+     			
+     			Stage stage=new Stage();
+     	       	Parent r = FXMLLoader.load(getClass().getResource("newDisk.fxml"));
+     	       	Scene s = new Scene(r);
+     	       	stage.setScene(s);
+     	       	stage.setResizable(false);//设置不能窗口改变大小
+     	       stage.setTitle("New Disk");
+     	       stage.getIcons().add(image);
+     	       	stage.show();
+
+     	   	 } catch(Exception e1) {
+     	            e1.printStackTrace();
+     	        }
+
+     	});
+     	
+     }
+     
 
     @Override
     public void startEdit() {

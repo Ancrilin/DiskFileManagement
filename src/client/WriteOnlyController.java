@@ -49,6 +49,7 @@ public void onButtonClickedWriteOnly(ActionEvent e) {
 				if(result) {
 					this.Label2.setText("写入成功！");
 					Management.getInstance().updateBuffer();
+					MainUIController.getInstance().showProperty(file);
 					MainUIController.getInstance().updateProgress();
 				}else {
 					this.Label2.setText("写入失败");

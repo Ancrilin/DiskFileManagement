@@ -1,5 +1,6 @@
 package cn.scau.edu.util;
 
+import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -81,19 +82,24 @@ public class Management {
 	
 	public void selectedFile(File file) {
 		this.changeDir(file.getParent());
-		System.out.println("file: "+file.getName());
+//		System.out.println("file: "+file.getName());
 		this.now_File = file;
 	}
 	
 	//改变当前目录
 	public void changeDir(Dir dir) {
-		System.out.println("dir: "+dir.getName());
+		if(dir.getName().equals("我的电脑")) {
+			this.pwd = dir;
+			return;
+		}
+//		System.out.println("dir: "+dir.getName());
 		this.pwd = dir;
 		this.disk_path = this.pwd.getDiskPath();
 		if(!dir.getDisk().getDisk_id().equals
 
 (this.now_disk.getDisk_id())) {
 			this.now_disk = dir.getDisk();
+			MainUIController.getInstance().updateProgress();
 		}
 	}
 	
@@ -250,7 +256,12 @@ public class Management {
 			MainUIController.getInstance().updateOpenedFileNum();
 		}
 		data = this.getNow_disk().getFat().readFile(file, length, openedTable.getOFFile(file));
-		return new String(data);
+		String str = null;
+		try {
+	           str = new String(data, "UTF-16LE");//编码
+	    } catch (UnsupportedEncodingException e) {
+	    } 
+		return str;
 	}
 	
 	//显示文件所有内容
@@ -264,7 +275,12 @@ public class Management {
 			MainUIController.getInstance().updateOpenedFileNum();
 		}
 		data = this.getNow_disk().getFat().typeFile(file);
-		return new String(data);
+		String str = null;
+		try {
+			str = new String(data, "UTF-16LE");//编码
+	    } catch (UnsupportedEncodingException e) {
+	    } 
+		return str;
 	}
 	
 	//写文件,每次写要以#结束
@@ -297,8 +313,12 @@ public class Management {
 			buf = buffer1;
 			buffer2.reset();
 		}
-		byte[] data_byte = data.getBytes();
-		for(int i=0;i<data.length();i++) {
+		byte[] data_byte = null;
+		try {
+			data_byte = data.getBytes("UTF-16LE");
+	    } catch (UnsupportedEncodingException e) {
+	    } 
+		for(int i=0;i<data_byte.length;i++) {//编码后写入
 			flag = buf.write(data_byte[i]);
 		}
 		return flag;

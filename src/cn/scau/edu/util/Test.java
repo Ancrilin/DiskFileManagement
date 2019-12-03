@@ -25,12 +25,22 @@ public class Test {
 		Dir pwd = management.selectDir(d1);
 		System.out.println("pwd: "+management.getPwd().getDiskPath());
 		File f2 = management.makeFile("f2");
-		String data = "write to f2 write to f2 write to f2 write to f2 write to f2 write to f2 write to f2 write to f2#";
+		String data = "a一b#";
 		management.writeFile(f2, data);
 		management.updateBuffer();
+		System.out.println(f2.getBlock_start());
+		for(int i=0;i<30;i++) {
+			System.out.print(management.getNow_disk().getFat().getBlocks()[f2.getBlock_start()].getBlockData()[i]+" ");
+		}
+		System.out.println();
+		management.writeFile(f2, data);
+		management.updateBuffer();
+		System.out.println(f2.getBlock_start());
+		for(int i=0;i<30;i++) {
+			System.out.print(management.getNow_disk().getFat().getBlocks()[f2.getBlock_start()].getBlockData()[i]+" ");
+		}
+		System.out.println();
 		System.out.println(management.readFile(f2, 50));
-		System.out.println(management.readFile(f2, 300));
-		
 	}
 
 }

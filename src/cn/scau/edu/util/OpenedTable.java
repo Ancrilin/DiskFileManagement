@@ -9,7 +9,7 @@ import cn.scau.edu.base.File;
 public class OpenedTable {
 	private static OpenedTable openedTable = null;
 	private List<OFFile> table = new ArrayList<OFFile>();
-	private int num;//允许打开文件数量
+	private int num = 5;//允许打开文件数量
 	
 	public static OpenedTable getInstance() {
 		if(openedTable == null) {
@@ -25,7 +25,7 @@ public class OpenedTable {
 	//没有打开该文件,则打开后添加到已打开表中
 	public boolean add(File file, int flag) {
 		boolean result = false;
-		if(!this.isExist(file) && this.table.size()<=this.num) {
+		if(!this.isExist(file) && this.table.size()<this.num) {
 			OFFile new_one = new OFFile();
 			new_one.setDisk_path(file.getDisk_path());
 //			new_one.setPath(file.getPath());
@@ -35,6 +35,7 @@ public class OpenedTable {
 			new_one.setRead(file.getRead().getBlock_num(), file.getRead().getByte_num());
 			new_one.setWrite(file.getWrite().getBlock_num(), file.getWrite().getByte_num());
 			this.table.add(new_one);
+//			file.getTreeItem().setGraphic(MainUIController.getInstance().getOpenedFile());
 			MainUIController.getInstance().updateOpenedFileNum();
 			result = true;
 		}
@@ -59,6 +60,7 @@ public class OpenedTable {
 		for(int i=0;i<this.table.size();i++) {
 			if(this.table.get(i).getDisk_path().equals(file.getDisk_path())) {
 				this.table.remove(i);
+//				file.getTreeItem().setGraphic(MainUIController.getInstance().getFileIcon());
 				MainUIController.getInstance().updateOpenedFileNum();
 				flag = true;
 				break;

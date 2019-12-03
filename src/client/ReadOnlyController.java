@@ -43,7 +43,7 @@ public void onButtonClickedReadOnly(ActionEvent e) {
 			int length = Integer.valueOf(this.textField1.getText()).intValue();
 			String data =  Management.getInstance().readFile(file, length);
 			if(data == null) {
-				System.out.println("read fail");
+//				System.out.println("read fail");
 			}
 			this.textArea1.appendText(data);
 			this.textArea1.appendText("\n");

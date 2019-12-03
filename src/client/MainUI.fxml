@@ -15,10 +15,10 @@
          </children>
       </VBox>
       <ProgressIndicator fx:id="ProgressIndicator1" layoutX="6.0" layoutY="421.0" prefHeight="92.0" prefWidth="316.0" progress="0.0" />
-      <TextField fx:id="TextFiel1" layoutX="461.0" layoutY="141.0" />
-      <TextField fx:id="TextFiel2" layoutX="461.0" layoutY="189.0" />
-      <TextField fx:id="TextFiel3" layoutX="461.0" layoutY="241.0" />
-      <TextField fx:id="TextFiel4" layoutX="461.0" layoutY="289.0" />
+      <TextField fx:id="TextFiel1" editable="false" layoutX="461.0" layoutY="141.0" />
+      <TextField fx:id="TextFiel2" editable="false" layoutX="461.0" layoutY="189.0" />
+      <TextField fx:id="TextFiel3" editable="false" layoutX="461.0" layoutY="241.0" />
+      <TextField fx:id="TextFiel4" editable="false" layoutX="461.0" layoutY="289.0" />
       <Label fx:id="Label1" layoutX="391.0" layoutY="145.0" text="文件名：" />
       <Label fx:id="Label2" layoutX="391.0" layoutY="193.0" text="文件类型：" />
       <Label fx:id="Label3" layoutX="391.0" layoutY="245.0" text="大小：" />
@@ -46,5 +46,6 @@
       <Label fx:id="label6" layoutX="58.0" layoutY="496.0" text="当前磁盘使用率:" />
       <Label layoutX="513.0" layoutY="27.0" text="已打开文件数：" />
       <Label fx:id="openedFileNum" layoutX="597.0" layoutY="27.0" prefHeight="17.0" prefWidth="27.0" text="0/5" />
+      <Button fx:id="showBtn" layoutX="451.0" layoutY="388.0" mnemonicParsing="false" onAction="#showDiskFAT" text="显示当前磁盘文件分配表" />
    </children>
 </AnchorPane>

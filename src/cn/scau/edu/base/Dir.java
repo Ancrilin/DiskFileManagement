@@ -29,6 +29,17 @@ public class Dir implements Super{
 		init();
 	}
 	
+	
+	public void setParent(Dir parent) {
+		this.parent = parent;
+		
+	}
+	
+	public Dir(String name) {
+		this.name = name;
+		
+	}
+	
 	private void init() {
 		this.disk_path = this.disk.getDisk_id() + ":/";
 		if(this.name.equals(this.getDisk().getDisk_id())) {
@@ -157,6 +168,7 @@ public class Dir implements Super{
 
 	public void setBlock_start(int block_start) {
 		this.block_start = block_start;
+		this.getDisk().getFat().getBlocks()[this.block_start].getBlockData()[4]=1;
 //		this.setOrdinaryFile();
 	}
 
@@ -186,10 +198,14 @@ public class Dir implements Super{
 	//目录
 	@Override
 	public boolean isDir() {
-		boolean flag = false;
-		if(this.getDisk().getFat().getBlocks()[this.block_start].getBlockData()[4]==1) {
-			flag = true;
-		}
+//		boolean flag = false;
+//		if(this.getName().equals("我的电脑")) {
+//			return true;
+//		}
+//		System.out.println("disk: "+this.getDisk()+this.getDisk().getDisk_id());
+//		if(this.getDisk().getFat().getBlocks()[this.block_start].getBlockData()[4]==1) {
+//			flag = true;
+//		}
 		return true;
 	}
 	
