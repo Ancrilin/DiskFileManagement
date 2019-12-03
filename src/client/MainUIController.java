@@ -121,6 +121,11 @@ public class MainUIController implements Initializable{
 		Management.getInstance().writeFile(f3, "D盘下的文件3 D盘下的文件3 D盘下的文件3#");
 		Management.getInstance().writeFile(f4, "D盘下的文件4 D盘下的文件4 D盘下的文件4 D盘下的文件4#");
 		Management.getInstance().writeFile(f5, "D盘下的文件5 D盘下的文件5 D盘下的文件5 D盘下的文件5 D盘下的文件5#");
+		Management.getInstance().closeFile(f1);
+		Management.getInstance().closeFile(f2);
+		Management.getInstance().closeFile(f3);
+		Management.getInstance().closeFile(f4);
+		Management.getInstance().closeFile(f5);
 		FileView.addDirTreeNode(f1, f1.getParent().getTreeItem());
 //		Management.getInstance().writeFile(f1, "这是文件1#");
 		Management.getInstance().updateBuffer();
