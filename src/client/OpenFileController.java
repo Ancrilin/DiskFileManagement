@@ -53,18 +53,19 @@ public class OpenFileController implements Initializable {
 		{
 			File file = Management.getInstance().getNowFile();
 			if(!file.isOnlyReadFile()) {
-				boolean result = Management.getInstance().writeFile(file, this.textField1.getText());
-				
+				//自动添加#
+				boolean result = Management.getInstance().writeFile(file, this.textField1.getText()+"#");
 				if(result) {
 					this.label2.setText("写入成功！");
 					Management.getInstance().updateBuffer();
 					MainUIController.getInstance().showProperty(file);
 					String input = textField1.getText();
-					char [] input2 = new char[input.length()-1];
-					for(int i=0;i<input.length()-1;i++) {
-						input2[i]=input.charAt(i);
-					}
-					this.textArea1.appendText(new String(input2));
+//					char [] input2 = new char[input.length()-1];
+//					for(int i=0;i<input.length()-1;i++) {
+//						input2[i]=input.charAt(i);
+//					}
+//					this.textArea1.appendText(new String(input2));
+					this.textArea1.appendText(this.textField1.getText());
 					this.textField1.clear();
 					MainUIController.getInstance().updateProgress();
 				}else {

@@ -44,7 +44,8 @@ public void onButtonClickedWriteOnly(ActionEvent e) {
 		{
 			File file = Management.getInstance().getNowFile();
 			if(!file.isOnlyReadFile()) {
-				boolean result = Management.getInstance().writeFile(file, this.textField1.getText());
+				//自动加#
+				boolean result = Management.getInstance().writeFile(file, this.textField1.getText()+"#");
 				this.textField1.clear();
 				if(result) {
 					this.Label2.setText("写入成功！");
